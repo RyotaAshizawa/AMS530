@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
 
     // initialize the array
-    int N = pow(2, 10); //datapoints
+    int N = pow(2, 14); //datapoints
     float arr[N];
     if (rank==0) {
         for (i = 0; i < N; i++){
