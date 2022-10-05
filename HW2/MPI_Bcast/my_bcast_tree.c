@@ -38,12 +38,14 @@ int main(int argc, char **argv) {
     int max_timestep = ceil(log2(size)) - 1; // # of timesteps required to perform broadcasting. -1 for 0-indexing.
 
     // Loop for each timestep
-    for (int t = 0; t <= max_timestep; t++) { // t: timestep
+    int t;
+    for (t = 0; t <= max_timestep; t++) { // t: timestep
         int tot_nodes = pow(2, t); // The total number of nodes that the data should be copied in at this time step
         int rank_start = pow(2, t);  // The smallest process id that should be filled in at this time step
 
         // send data
-        for (int src_rank = 0; src_rank <= tot_nodes - 1; src_rank++){
+        int src_rank;
+        for (src_rank = 0; src_rank <= tot_nodes - 1; src_rank++){
             int dst_rank = src_rank + tot_nodes;
             if (rank == src_rank && dst_rank < size){
                 //printf("Send data from %d to %d\n", src_rank, dst_rank);
@@ -52,7 +54,8 @@ int main(int argc, char **argv) {
         }
 
         // receive data
-        for (int dst_rank = rank_start; dst_rank <= (rank_start + tot_nodes - 1); dst_rank++){
+        int dst_rank;
+        for (dst_rank = rank_start; dst_rank <= (rank_start + tot_nodes - 1); dst_rank++){
             int src_rank = dst_rank - tot_nodes;
             if (rank == dst_rank && dst_rank < size){
                 //printf("Recv from %d to %d\n", src_rank, dst_rank);
