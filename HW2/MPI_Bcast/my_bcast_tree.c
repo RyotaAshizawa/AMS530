@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     end_time = MPI_Wtime();
     // show the time on the master node
     if (rank==0) {
-        printf("%f\n", start_time - end_time);
+        printf("%f\n", end_time - start_time);
     }
 
     MPI_Finalize();
