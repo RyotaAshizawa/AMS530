@@ -34,8 +34,7 @@ int main(int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     start_time = MPI_Wtime();
 
-
-    //Broad casting by using tree structure
+    //Broadcasting by using tree structure
     int max_timestep = ceil(log2(size)) - 1; // # of timesteps required to perform broadcasting. -1 for 0-indexing.
 
     // Loop for each timestep
