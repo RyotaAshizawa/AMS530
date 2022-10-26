@@ -27,36 +27,6 @@ void printf_given_2Darray(int N, float *array){
     printf("]\n");
 }
 
-void copy_matrix(int N, float *original, float *target){
-    // copy matrix
-    for (int i = 0; i < N; i++){
-        for (int j = 0; j < N; j++) {
-            target[i * N + j] = original[i * N + j];
-        }
-    }
-}
-
-void rollup_given_2Darray(int N, float *array, int rollup_step){
-    // Create temp and assign heap
-    float *temp;
-    temp = (float*)malloc(sizeof(float) * N * N);
-    copy_matrix(N, array, temp);
-
-    // rollup part
-    for (int i = 0; i < N; i++){
-        // get rollup index
-        int rolledup_row_idx = i - rollup_step;
-        if (rolledup_row_idx < 0){
-            rolledup_row_idx = i - rollup_step + N;
-        }
-        // roll up
-        for (int j = 0; j < N; j++) {
-            array[rolledup_row_idx * N + j] = temp[i * N + j];
-        }
-    }
-    free(temp);
-}
-
 void get_block_from_original_matrix(int first_row, int first_col, int N, int n, float *original_matrix, float *block_matrix){
     // n is the number of elements in the block matrix
     // N is the number of elements in the original matrix
@@ -86,14 +56,18 @@ void send_a_to_each_proc(int blocks_per_dir, int step, int N, int n, float *a, f
     }
 }
 
-void send_rolledup_b_to_each_proc(int blocks_per_dir, int N, int n, float *b, float *block_b_to_send, int tag, MPI_Comm comm, MPI_Request *request){
+void send_rolledup_b_to_each_proc(int n_of_rollup, int blocks_per_dir, int N, int n, float *b, float *block_b_to_send, int tag, MPI_Comm comm, MPI_Request *request){
     int dst_rank;
     for (int block_row = 0; block_row < blocks_per_dir; block_row++) {
         for (int block_col = 0; block_col < blocks_per_dir; block_col++) {
             // get dst_rank
             dst_rank = blocks_per_dir * block_row + block_col;
-            // get data for sending
-            get_block_from_original_matrix(block_row * n, block_col * n, N, n, b, block_b_to_send);
+            // get [Rolled up block matrix data] for sending.
+            int rolledup_block_row = block_row + n_of_rollup;
+            if (rolledup_block_row >= blocks_per_dir){
+                rolledup_block_row = rolledup_block_row - blocks_per_dir;
+            }
+            get_block_from_original_matrix(rolledup_block_row * n, block_col * n, N, n, b, block_b_to_send);
             // send data
             MPI_Isend(block_b_to_send, n * n, MPI_FLOAT, dst_rank, tag, comm, request);
         }
@@ -168,7 +142,7 @@ int main(int argc, char **argv) {
     float *a, *b, *c, *c_temp;
     float *block_a_to_send, *block_a_to_recv; //block matrix
     float *block_b_to_send, *block_b_to_recv; //block matrix
-    float *block_c, *block_c_temp;
+    float *block_c, *block_c_store_partial;
 
     // Get MPI variables
     MPI_Init(&argc, &argv);
@@ -202,7 +176,7 @@ int main(int argc, char **argv) {
     block_b_to_send = (float*)malloc(sizeof(float) * n * n);
     block_b_to_recv = (float*)malloc(sizeof(float) * n * n);
     block_c = (float*)malloc(sizeof(float) * n * n);
-    block_c_temp = (float*)malloc(sizeof(float) * n * n);
+    block_c_store_partial = (float*)malloc(sizeof(float) * n * n);
 
     // Init matrix if initialization is needed
     init_matrix(n, block_c);
@@ -231,14 +205,10 @@ int main(int argc, char **argv) {
         /**
          *  About matrix B
          */
-        // Roll up the matrix B on rank 0
-        if (step != 0 && rank == 0) {
-            rollup_given_2Darray(N, b, n);
-            //printf_given_2Darray(N, b);
-        }
-        // Send rolled up matrix B to all processors from rank 0
+        // Send rolled up matrix B to all processors from rank 0.
+        // [!] Roll up is implicitly calculated in the function to save time.
         if (rank == 0) {
-            send_rolledup_b_to_each_proc(blocks_per_dir, N, n, b, block_b_to_send, tag, MPI_COMM_WORLD, &request);
+            send_rolledup_b_to_each_proc(step, blocks_per_dir, N, n, b, block_b_to_send, tag, MPI_COMM_WORLD, &request);
         }
         // recv the block matrix of b by each processor
         MPI_Irecv(block_b_to_recv, n * n, MPI_FLOAT, 0, tag, MPI_COMM_WORLD, &request);
@@ -247,9 +217,9 @@ int main(int argc, char **argv) {
         /**
          *  Matrix multiplication on block A and block B
          */
-        init_matrix(n, block_c_temp);
-        multiply_matrices(n, block_a_to_recv, block_b_to_recv, block_c_temp);
-        sum_matrices(n, block_c_temp, block_c);
+        init_matrix(n, block_c_store_partial);
+        multiply_matrices(n, block_a_to_recv, block_b_to_recv, block_c_store_partial);
+        sum_matrices(n, block_c_store_partial, block_c);
 
     }
     // Gather summation of each processor to rank 0, and rearrange it on rank 0
@@ -278,7 +248,7 @@ int main(int argc, char **argv) {
     free(block_b_to_send);
     free(block_b_to_recv);
     free(block_c);
-    free(block_c_temp);
+    free(block_c_store_partial);
 
     // Time detection
     MPI_Barrier(MPI_COMM_WORLD);

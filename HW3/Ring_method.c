@@ -42,36 +42,6 @@ void get_transpose_given2Darray(int N, float *original_array, float *transposed_
     }
 }
 
-void copy_matrix(int N, float *original, float *target){
-    // copy matrix
-    for (int i = 0; i < N; i++){
-        for (int j = 0; j < N; j++) {
-            target[i * N + j] = original[i * N + j];
-        }
-    }
-}
-
-void rollup_given_2Darray(int N, float *array){
-    // Create temp and assign heap
-    float *temp;
-    temp = (float*)malloc(sizeof(float) * N * N);
-    copy_matrix(N, array, temp);
-
-    // rollup part
-    for (int i=0; i < N; i++){
-        // get rolledup index
-        int rolledup_row_idx = i - 1;
-        if (rolledup_row_idx < 0){
-            rolledup_row_idx = i - 1 + N;
-        }
-        // roll up
-        for (int j=0; j < N; j++) {
-            array[rolledup_row_idx * N + j] = temp[i * N + j];
-        }
-    }
-    free(temp);
-}
-
 float get_product_of_row_and_col_vectors(int N, float *row, float *col){
     float total = 0;
     for (int i = 0; i < N; i++){
@@ -91,7 +61,7 @@ int main(int argc, char **argv) {
     float *row_of_products;
     float *row_of_a;
     float *col_of_b;
-    float *a, *b, *c, *transposed_c, *transposed_b, *a_temp;
+    float *a, *b, *c, *transposed_c, *transposed_b;
 
     // Get MPI variables
     MPI_Init(&argc, &argv);
@@ -113,7 +83,6 @@ int main(int argc, char **argv) {
     c = (float*)malloc(sizeof(float) * N * N);
     transposed_c = (float*)malloc(sizeof(float) * N * N);
     transposed_b = (float*)malloc(sizeof(float) * N * N);
-    a_temp = (float*)malloc(sizeof(float) * N * N);
 
     // Get max number of repeat of mpi.
     // e.g. If the matrix size is N = 8 and np = 2, this will be 8/2 = 4.
@@ -124,25 +93,26 @@ int main(int argc, char **argv) {
         init_given_2Darray_randomly(N, a);
         init_given_2Darray_randomly(N, b);
         get_transpose_given2Darray(N, b, transposed_b);  // get the transpose of b
-        copy_matrix(N, a, a_temp); // copy a to a_temp
     }
+
 
     // Loop till all matrix elements are calculated.
     for (int block = 0; block < max_n_blocks; block++){
-        int lower_index = block * size * N; // the lowest index dealt in this repeat for arrays
+        int block_index = block * size * N; // the index of the block dealt in this repeat
 
         // Scatter columns from the matrix b. Only needed cols will be copied.
-        MPI_Scatter(&transposed_b[lower_index], N, MPI_FLOAT, col_of_b, N, MPI_FLOAT, 0, MPI_COMM_WORLD);
+        MPI_Scatter(&transposed_b[block_index], N, MPI_FLOAT, col_of_b, N, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
         // Perform matrix multiplication on each processor
+        int row_index = block_index;
         for (int step = 0; step < N; step++) {
-            // Roll up the matrix
+            // Get index After rollup. Roll up is performed implicitly because explicit roll up requires more time
             if (step != 0 && rank == 0) {
-                rollup_given_2Darray(N, a);
+                row_index = row_index + N;
             }
 
             // Scatter rows from the matrix a. Only needed rows will be copied.
-            MPI_Scatter(&a[lower_index], N, MPI_FLOAT, row_of_a, N, MPI_FLOAT, 0, MPI_COMM_WORLD);
+            MPI_Scatter(&a[row_index], N, MPI_FLOAT, row_of_a, N, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
             // Perform multiplication on the given row and col
             // Get the col index where the product should be saved
@@ -153,9 +123,7 @@ int main(int argc, char **argv) {
             row_of_products[col_to_fill] = get_product_of_row_and_col_vectors(N, row_of_a, col_of_b);
         }
         // Gather data from processors to the array on rank=0
-        MPI_Gather(row_of_products, N, MPI_FLOAT, &c[lower_index], N, MPI_FLOAT, 0, MPI_COMM_WORLD);
-        // reinitialize a in order to reset the rollup
-        copy_matrix(N, a_temp, a);
+        MPI_Gather(row_of_products, N, MPI_FLOAT, &c[block_index], N, MPI_FLOAT, 0, MPI_COMM_WORLD);
     }
 
     // Get the final result by taking transpose
