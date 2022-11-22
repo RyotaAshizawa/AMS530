@@ -394,6 +394,7 @@ int main(int argc, char *argv[]){
     MPI_Irecv(n_eachrank, max_rank, MPI_INT, 0, mpi_tag_n_per_proc, MPI_COMM_WORLD, &request);
     MPI_Wait(&request, &status);
 
+
     /**
     // recv particles in the main box for this processor
     double *particles_main_box = new double [n_eachrank[rank] * 4];
