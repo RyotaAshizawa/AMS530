@@ -6,7 +6,6 @@
 #include <string>
 #include "particle.hpp"
 #include "box.hpp"
-#include "mpi_sim.hpp"
 
 
 int main(int argc, char *argv[]){
@@ -16,7 +15,7 @@ int main(int argc, char *argv[]){
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Request request;
+    MPI_Request *request;
     MPI_Status status;
 
     // set variables
@@ -29,7 +28,10 @@ int main(int argc, char *argv[]){
     const int mpi_tag_surr_box = 4;
 
     // create box on rank 0 and send the pointer
-    MPI_sim MPI_simulator(N, box_size, MPI_COMM_WORLD, &request, &status, size, rank);
+    Box box(N, box_size, true);
+    if (rank == 0){
+        box.mpi_send(MPI_COMM_WORLD, request, 0, size);
+    }
     //MPI_simulator.print_rank(rank);
 
     MPI_Finalize();

@@ -3,6 +3,7 @@
 //
 #include <fstream>
 #include <random>
+#include <mpi.h>
 #include "particle.hpp"
 
 #ifndef HW4_BOX_HPP
@@ -17,6 +18,7 @@ public:
     void print_particles();
     void init_coords_and_forces(bool use_rand);
     void dump_particles(std::string &filepath);
+    void mpi_send(MPI_Comm comm, MPI_Request *request, const int tag, const int size);
     int get_n_particles();
 
 private:

@@ -10,13 +10,13 @@
 
 class MPI_sim {
 public:
-    MPI_sim(const int N, const int box_size, MPI_Comm comm, MPI_Request *request, MPI_Status *status, const int size, const int rank);
+    MPI_sim(Box *box, const int N, const int box_size, MPI_Comm comm, MPI_Request *request, MPI_Status *status, const int size, const int rank);
     // member functions
     void print_rank(const int rank);
 
 private:
     // constructor params
-    Box box;
+    Box *box;
     int rank;
     int size;
     int max_rank;

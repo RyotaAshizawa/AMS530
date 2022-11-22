@@ -18,7 +18,7 @@ Box::Box(const int N, const int box_size, const bool rand_coordinates) {
 }
 
 Box::~Box() {
-    //delete[] particles;
+    delete[] particles;
 }
 
 // member functions
@@ -66,5 +66,10 @@ void Box::init_coords_and_forces(bool use_rand) {
                 if (particle_count == N) {break;}
             }
         }
+    }
+}
+void mpi_send(MPI_Comm comm, MPI_Request *request, const int tag, const int size){
+    for (int rank = 0; rank < size; rank++) {
+        MPI_Isend(&rank, 1, MPI_INT, rank, tag, comm, request);
     }
 }
