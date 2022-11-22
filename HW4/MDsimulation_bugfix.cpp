@@ -6,6 +6,7 @@
 #include <string>
 #include "particle.hpp"
 #include "box.hpp"
+#include "mpi.h"
 
 
 int main(int argc, char *argv[]){
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]){
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Request *request;
-    MPI_Status status;
+    MPI_Status *status;
 
     // set variables
     const int N = std::stoi(argv[1]);
@@ -32,6 +33,9 @@ int main(int argc, char *argv[]){
     if (rank == 0){
         box.mpi_send(MPI_COMM_WORLD, request, 0, size);
     }
+    int recv;
+    MPI_Irecv(&recv, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, request);
+    MPI_Wait(request, status);
     //MPI_simulator.print_rank(rank);
 
     MPI_Finalize();
