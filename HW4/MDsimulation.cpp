@@ -3,69 +3,8 @@
 //
 
 #include <iostream>
-#include <mpi.h>
 #include <cmath>
-#include <random>
-#include <fstream>
 
-class Particle{
-public:
-    Particle(){
-        x = 0;
-        y = 0;
-        z = 0;
-        fx = 0;
-        fy = 0;
-        fz = 0;
-        rank = 0;
-        id = 0;
-    }
-    // set
-    void set_coordinate(const double x, const double y, const double z, const double fx, const double fy, const double fz, const int id){
-        this -> x = x;
-        this -> y = y;
-        this -> z = z;
-        this -> fx = fx;
-        this -> fy = fy;
-        this -> fz = fz;
-        this -> id = id;
-    }
-    void set_rank(const int rank){
-        this -> rank = rank;
-    }
-    // get
-    int get_rank(){
-        return rank;
-    }
-    double get_x(){
-        return x;
-    }
-    double get_y(){
-        return y;
-    }
-    double get_z(){
-        return z;
-    }
-    int get_id(){
-        return id;
-    }
-    // file printing
-    void print(){
-        std::cout << "(x, y, z, fx, fy, fz, rank, id) = (" << x << ", " << y << ", " << z << ", " << fx << ", " << fy << ", " << fz << ", " << rank << ", " << id << ")" << std::endl;
-    }
-    std::string dump_coordinate(){
-        return std::to_string(x) + "\t" + std::to_string(y) + "\t" + std::to_string(z);
-    }
-private:
-    double x;
-    double y;
-    double z;
-    double fx;
-    double fy;
-    double fz;
-    int rank;
-    int id;
-};
 
 class Particles{
 public:
@@ -102,19 +41,6 @@ public:
         init_rank();
         init_mpi_particles_in_mainbox();
         init_map_rank_to_n_peripheral_boxes();
-    }
-    ~Particles(){
-        delete[] particles;
-        delete[] n_eachrank;
-        delete[] map_rank_to_cell;
-        delete[] map_rank_to_n_surrownd_cells;
-        //delete[] particles_each_rank;
-    }
-    // member functions
-    void print(){
-        for (int i = 0; i < N; i++){
-            particles[i].print();
-        }
     }
     void print_rank(const int rank){
         std::cout << "All particles on rank:" << rank << std::endl;
@@ -164,6 +90,7 @@ public:
             MPI_Isend(particles_coord_rank[dst_rank], n_eachrank[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
         }
     }
+    /**
     void mpi_send_surrboxes_particles(MPI_Comm comm, MPI_Request *request, const int tag){
         for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
             // get particles sum in the surr box
@@ -194,15 +121,8 @@ public:
             MPI_Isend(surrbox_coords, n_in_surrbox * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
         }
     }
+    **/
     // file
-    void dump_particles(std::string &filepath){
-        std::ofstream ofs(filepath);
-        ofs << N << std::endl;
-        ofs << "MD example" << std::endl;
-        for (int i = 0; i < N; i++) {
-            ofs << "He\t" << particles[i].dump_coordinate() << std::endl;
-        }
-    }
 
 private:
     // variables
@@ -376,10 +296,10 @@ int main(int argc, char *argv[]){
     if (rank == 0) {
         // make particles
         Particles particles(N, box_size, size, true);
-        particles.print();
+        //particles.print();
         // dump particles
         std::string file_path = "./test.xyz";
-        particles.dump_particles(file_path);
+        //particles.dump_particles(file_path);
         // Send info
         particles.mpi_send_n_eachrank(MPI_COMM_WORLD, &request, mpi_tag_n_per_proc);
         //particles.mpi_send_mainbox_particles(MPI_COMM_WORLD, &request, mpi_tag_main_box);
