@@ -18,7 +18,7 @@ Box::Box(const int N, const int box_size, const bool rand_coordinates) {
 }
 
 Box::~Box() {
-    delete[] particles;
+    //delete[] particles;
 }
 
 // member functions
