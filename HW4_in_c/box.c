@@ -18,7 +18,6 @@ void set_box_size(Box *box, const double box_size){
 }
 void set_n_in_box(Box *box, const int N){
     box -> N = N;
-    box -> particles = (Particle *) malloc(sizeof(Particle) * box -> N);
 }
 void dump_particles(Box *box, char filepath[]){
     FILE *fp = fopen(filepath, "w");

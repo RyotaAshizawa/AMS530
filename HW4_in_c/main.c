@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
 
     // Box definition
     Box *box = (Box *)malloc(sizeof(Box));
+    box -> particles = (Particle *) malloc(sizeof(Particle) * box -> N);
     set_box_size(box, box_size);
     set_n_in_box(box, N);
     init_coords_and_forces(box, true, particles_per_side, particle_cellsize);
