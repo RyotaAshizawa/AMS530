@@ -51,9 +51,10 @@ int main(int argc, char **argv) {
     for (i = 0; i < N; i++){
         box[i] = (double *)malloc(sizeof(double) * 8);
     }
-    printf("%d", particles_per_side);
-    init_coords_and_forces(box, true, N, particles_per_side, particle_cellsize);
-    print_particles(box, N);
+    if (rank == 0) {
+        init_coords_and_forces(box, true, N, particles_per_side, particle_cellsize);
+        print_particles(box, N);
+    }
 
     /**
     set_box_size(&box, box_size);

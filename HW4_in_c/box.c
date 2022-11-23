@@ -24,6 +24,7 @@ void dump_particles(double *box, char filepath[]){
 
 void init_coords_and_forces(double **box, bool use_rand, const int N, const int particles_per_side, const double particle_cellsize) {
     // assume each particle locates at the center of each cell
+    bool flag;
     double x, y, z;
     int particle_count = 0;
     for (int i = 0; i < particles_per_side; i++) {
@@ -41,10 +42,15 @@ void init_coords_and_forces(double **box, bool use_rand, const int N, const int 
                 }
                 set_coordinate(box[particle_count], x, y, z, 0, 0, 0, 0, particle_count);
                 // Break the loop if the positions of all particles are set.
-                particle_count++;
-                if (particle_count == N) {break;}
+                particle_count = particle_count + 1;
+                if (particle_count == N) {
+                    flag = true;
+                    break;
+                }
             }
+            if (flag){break;}
         }
+        if (flag){break;}
     }
 }
 
