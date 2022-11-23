@@ -49,34 +49,26 @@ int main(int argc, char **argv) {
     set_box_size(box, box_size);
     set_n_in_box(box, N); //set N before assign memory for particle
     box -> particles = (Particle *) malloc(sizeof(Particle) * box -> N); //assign
+    init_coords_and_forces(box, true, particles_per_side, particle_cellsize);
+    dump_particles(box, "./test.xyz");
+    print_particles(box);
+
+    // assign mpi mapping
+    init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
+    assign_rank_to_box(box, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
 
     if (rank == 0) {
-        // Box setting
-        init_coords_and_forces(box, true, particles_per_side, particle_cellsize);
-        dump_particles(box, "./test.xyz");
-        print_particles(box);
-
-        // assign mpi mapping
-        init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
-        assign_rank_to_box(box, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
-
-        for (int i = 0; i < max_rank; i++){
-            printf("%d\n", n_particles_eachrank[i]);
-        }
-        //mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
+        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
         //int i = 1;
         //MPI_Isend(n_particles_eachrank, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request);
     }
 
     // receive number of particles
-    /**
     if (rank < max_rank)  {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
         printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
-    **/
-
 
     /**
     //MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
