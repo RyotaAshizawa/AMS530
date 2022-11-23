@@ -10,17 +10,15 @@ void print_particles(double **box, const int N) {
         print_particle(box[i]);
     }
 }
-/**
-void dump_particles(double *box, char filepath[]){
+void dump_particles(double **box, char filepath[], const int N){
     FILE *fp = fopen(filepath, "w");
-    fprintf(fp, "%d\n", box -> N);
+    fprintf(fp, "%d\n", N);
     fprintf(fp, "Initial coordinate\n");
-    for (int i = 0; i < box -> N; i++) {
-        fprintf(fp, "He\t%f\t%f\t%f\n", (box->particles)[i].x, (box->particles)[i].y, (box->particles)[i].z);
+    for (int i = 0; i < N; i++) {
+        fprintf(fp, "He\t%f\t%f\t%f\n", box[i][0], box[i][1], box[z][2]);
     }
     fclose(fp);
 }
-**/
 
 void init_coords_and_forces(double **box, bool use_rand, const int N, const int particles_per_side, const double particle_cellsize) {
     // assume each particle locates at the center of each cell
