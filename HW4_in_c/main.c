@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
 
     // mapping between cell and rank
-    int *n_particles_eachrank = (int *)malloc(sizeof(int));
+    int *n_particles_eachrank = (int *)malloc(sizeof(int) * max_rank);
     int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3 * max_rank);
     int *map_cell_to_rank = (int *)malloc(sizeof(int) * max_rank);
 
@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
         // MPI definition
         init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell);
         assign_rank_to_box(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank);
+        print_particles(box, N);
         //mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
     }
 
