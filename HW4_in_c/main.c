@@ -45,15 +45,15 @@ int main(int argc, char **argv) {
 
 
     // Box definition
-    Box *box = (Box *)malloc(sizeof(Box)); //first assign box memory
-    set_box_size(box, box_size);
-    set_n_in_box(box, N); //set N before assign memory for particle
-    box -> particles = (Particle *) malloc(sizeof(Particle) * (box -> N)); //assign
+    Box box; //first assign box memory
+    set_box_size(&box, box_size);
+    set_n_in_box(&box, N); //set N before assign memory for particle
+    box.particles = (Particle *) malloc(sizeof(Particle) * (box.N)); //assign
 
     if (rank == 0) {
-        init_coords_and_forces(box, true, particles_per_side, particle_cellsize);
-        dump_particles(box, "./test.xyz");
-        print_particles(box);
+        init_coords_and_forces(&box, true, particles_per_side, particle_cellsize);
+        dump_particles(&box, "./test.xyz");
+        print_particles(&box);
 
         // assign mpi mapping
         //init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
