@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
     dump_particles(box, "./test.xyz");
     print_particles(box);
 
+    /**
     if (rank == 0) {
         // Box setting
         // assign mpi mapping
@@ -65,6 +66,7 @@ int main(int argc, char **argv) {
         //int i = 1;
         //MPI_Isend(n_particles_eachrank, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request);
     }
+    **/
 
     // receive number of particles
     /**
