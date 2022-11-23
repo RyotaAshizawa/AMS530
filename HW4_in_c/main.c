@@ -11,6 +11,11 @@ void mpi_send_n_particles_to_eachrank(int *n_particles_eachrank, const int tag, 
         MPI_Isend(n_particles_eachrank, max_rank, MPI_INT, dst_rank, tag, comm, request);
     }
 }
+void mpi_send_centerbox_particles(int *n_particles_eachrank, double **coords_each_rank, const int max_rank, MPI_Comm comm, MPI_Request *request, const int tag){
+    for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
+        MPI_Isend(coords_each_rank[dst_rank], n_particles_eachrank[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
+    }
+}
 
 int main(int argc, char **argv) {
     int rank, size, i;
@@ -32,14 +37,18 @@ int main(int argc, char **argv) {
     double cell_len_per_cpu = box_size / cpus_per_side;
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
 
-    // mapping between cell and rank
+    // memory allocations
     int *n_particles_eachrank = (int *)malloc(sizeof(int) * max_rank);
     int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3 * max_rank);
     int *map_cell_to_rank = (int *)malloc(sizeof(int) * max_rank);
-
+    double **box = (double **)malloc(sizeof(double*) * N); //first assign box memory
+    double **coords_each_rank = (double **)malloc(sizeof(double*) * max_rank);
+    for (i = 0; i < max_rank; i++){
+        coords_each_rank[i] = (double *)malloc(sizeof(double) * 4 * N);
+    }
+    double *particles_center_box = (double *)malloc(4 * N);
 
     // Box definition
-    double **box = (double **)malloc(sizeof(double*) * N); //first assign box memory
     for (i = 0; i < N; i++){
         box[i] = (double *)malloc(sizeof(double) * 8);
     }
@@ -56,24 +65,29 @@ int main(int argc, char **argv) {
         mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
     }
 
-
     // Recv number of particles in each cell
     if (rank < max_rank && rank != 0)  {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
-        printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
+        //printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
 
-    // Create array stores particle posistions for each rank
-    /**
-    double **coords_each_rank = (double **)malloc(sizeof(double*) * N);
-    for (i = 0; i < 8; i++){
-        coords_each_rank[i] = (double *)malloc(sizeof(double) * 4);
-    }
-    **/
-    double coords_each_rank[N][4];
+    // Copy particle positions for each rank
     if (rank == 0) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
+        // send particles in the centered box
+        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag);
+        print_particles_special_rank(coords_each_rank, n_particles_eachrank, rank);
+    }
+
+    // receive the data for the center box
+    if (rank < max_rank) {
+        MPI_Irecv(particles_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
+        MPI_Wait(&request, &status);
+    }
+
+    if (rank == 1) {
+        print_particles_centerbox_special_rank(particles_center_box, n_particles_eachrank[rank]);
     }
 
 

@@ -82,7 +82,7 @@ void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, in
         n_particles_eachrank[rank]++;
     }
 }
-void get_particles_each_rank(double **box, const int N, double coords_each_rank[N][4], const int max_rank){
+void get_particles_each_rank(double **box, const int N, double **coords_each_rank, const int max_rank){
     // array definition and initialize
     int n_assigned_p_each_rank[max_rank];
     for (int i = 0; i < max_rank; i++){
@@ -95,5 +95,16 @@ void get_particles_each_rank(double **box, const int N, double coords_each_rank[
         coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 2] = get_z(box[i]);
         coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 3] = get_id(box[i]);
         n_assigned_p_each_rank[rank]++;
+    }
+}
+void print_particles_special_rank(double **coords_each_rank, int *n_particles_eachrank, const int rank){
+    for (int i = 0; i < n_particles_eachrank[rank]; i++){
+        double *coords_this_rank = coords_each_rank[rank];
+        printf("(x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", coords_this_rank[4 * i + 0], coords_this_rank[4 * i + 1], coords_this_rank[4 * i + 2], (int)coords_this_rank[4 * i + 3]);
+    }
+}
+void print_particles_centerbox_special_rank(double *particles_center_box, int particles_in_centerbox){
+    for (int i = 0; i < particles_in_centerbox; i++){
+        printf("(x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", particles_center_box[4 * i + 0], particles_center_box[4 * i + 1], particles_center_box[4 * i + 2], (int)particles_center_box[4 * i + 3]);
     }
 }
