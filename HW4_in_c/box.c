@@ -59,7 +59,7 @@ void init_map_cell_to_rank(int cpus_per_side, int map_cell_to_rank[cpus_per_side
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
             for (int k = 0; k < cpus_per_side; k++) {
-                map_cell_to_rank[i][j][k] = rank;
+                map_cell_to_rank[i * cpus_per_side * cpus_per_side + j * cpus_per_side + k] = rank;
                 map_rank_to_cell[rank * 3 + 0] = i;
                 map_rank_to_cell[rank * 3 + 1] = j;
                 map_rank_to_cell[rank * 3 + 2] = k;

@@ -35,15 +35,13 @@ int main(int argc, char **argv) {
     // mapping between cell and rank
     int *n_particles_eachrank = (int *)malloc(sizeof(int));
     int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3);
-    int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side];
-    /**
+    int ***map_cell_to_rank = (int ***)malloc(sizeof(int**) * cpus_per_side);
     for (int i = 0; i < cpus_per_side; i++) {
         map_cell_to_rank[i] = (int **) malloc(sizeof(int*) * cpus_per_side);
         for (int j = 0; j < cpus_per_side; j++) {
             map_cell_to_rank[i][j] = (int *) malloc(sizeof(int) * cpus_per_side);
         }
     }
-    **/
 
 
     // Box definition
