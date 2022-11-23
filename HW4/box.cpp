@@ -69,7 +69,8 @@ void Box::init_coords_and_forces(bool use_rand) {
     }
 }
 void Box::mpi_send(MPI_Comm comm, MPI_Request *request, const int tag, const int size){
+    int sender = 10;
     for (int rank = 0; rank < size; rank++) {
-        MPI_Isend(&rank, 1, MPI_INT, rank, tag, comm, request);
+       MPI_Send(&sender, 1, MPI_INT, rank, tag, comm);
     }
 }

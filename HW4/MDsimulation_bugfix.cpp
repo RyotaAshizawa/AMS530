@@ -6,7 +6,9 @@
 #include <string>
 #include "particle.hpp"
 #include "box.hpp"
-#include "mpi.h"
+#include <cmath>
+#include <mpi.h>
+#include <iostream>
 
 
 int main(int argc, char *argv[]){
@@ -29,15 +31,18 @@ int main(int argc, char *argv[]){
     const int mpi_tag_surr_box = 4;
 
     // create box on rank 0 and send the pointer
-    Box box(N, box_size, true);
+    int tag = 0;
     if (rank == 0){
-        box.mpi_send(MPI_COMM_WORLD, request, 0, size);
+        int item[1] = {10};
+        Box box(N, box_size, true);
+        box.mpi_send(MPI_COMM_WORLD, request, tag, size);
+        //for (int rank = 0; rank < size; rank++) {
+        //    MPI_Send(item, 1, MPI_INT, rank, tag, MPI_COMM_WORLD);
+        //}
     }
-    int recv;
-    MPI_Irecv(&recv, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, request);
-    MPI_Wait(request, status);
-    std::cout << "Rank:" << rank << ", " << "recv:"  << recv;
-
+    int recv[1];
+    MPI_Recv(recv, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, status);
+    std::cout << "Rank:" << rank << ", " << "recv:"  << recv[0] << std::endl;
     MPI_Finalize();
     return 0;
 }
