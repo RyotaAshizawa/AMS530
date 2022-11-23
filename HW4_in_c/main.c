@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
 
     // mapping between cell and rank
-    int *n_particles_eachrank = (int *)malloc(sizeof(max_rank));
-    int *map_rank_to_cell = (int *)malloc(sizeof(max_rank) * 3);
+    int *n_particles_eachrank = (int *)malloc(sizeof(int));
+    int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3);
     /**
     int ***map_cell_to_rank = (int ***)malloc(sizeof(int**) * cpus_per_side);
     for (int i = 0; i < cpus_per_side; i++) {
