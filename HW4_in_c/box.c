@@ -54,7 +54,7 @@ void init_coords_and_forces(double **box, bool use_rand, const int N, const int 
 
 
 //mpi functions
-void init_map_cell_to_rank(int cpus_per_side, int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side], int *map_rank_to_cell) {
+void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_rank_to_cell) {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
