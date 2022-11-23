@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 
 
     // Box definition
-    double *particle = (double *)malloc(sizeof(double) * 7); //first assign box memory
+    double *particle = (double *)malloc(sizeof(double) * 8); //first assign box memory
     set_coordinate(particle, 0, 1, 2, 3, 4, 5, 6, 7);
     /**
     set_box_size(&box, box_size);
