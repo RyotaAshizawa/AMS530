@@ -5,20 +5,12 @@
 #include "box.h"
 
 // member functions
-Particle get_particle(double *box, const int i){
-    return box->particles[i];
-}
-void print_particles(double *box) {
-    for (int i = 0; i < box -> N; i++) {
-        print_particle(&(box->particles)[i]);
+void print_particles(double **box, const int N) {
+    for (int i = 0; i < N; i++) {
+        print_particle(box[i]);
     }
 }
-void set_box_size(double *box, const double box_size){
-    box -> box_size = box_size;
-}
-void set_n_in_box(double *box, const int N){
-    box -> N = N;
-}
+/**
 void dump_particles(double *box, char filepath[]){
     FILE *fp = fopen(filepath, "w");
     fprintf(fp, "%d\n", box -> N);
@@ -28,9 +20,10 @@ void dump_particles(double *box, char filepath[]){
     }
     fclose(fp);
 }
+**/
 
-void init_coords_and_forces(double *box, bool use_rand, const int particles_per_side, const double particle_cellsize) {
-    /** assume each particle locates at the center of each cell **/
+void init_coords_and_forces(double **box, bool use_rand, const int N, const int particles_per_side, const double particle_cellsize) {
+    // assume each particle locates at the center of each cell
     double x, y, z;
     int particle_count = 0;
     for (int i = 0; i < particles_per_side; i++) {
@@ -46,10 +39,10 @@ void init_coords_and_forces(double *box, bool use_rand, const int particles_per_
                     y = y + particle_cellsize * ((double)rand() / RAND_MAX * 0.2);
                     z = z + particle_cellsize * ((double)rand() / RAND_MAX * 0.2);
                 }
-                set_coordinate(&(box -> particles[particle_count]), x, y, z, 0, 0, 0, 0, particle_count);
+                set_coordinate(box[particle_count], x, y, z, 0, 0, 0, 0, particle_count);
                 // Break the loop if the positions of all particles are set.
                 particle_count++;
-                if (particle_count == box -> N) {break;}
+                if (particle_count == N) {break;}
             }
         }
     }
@@ -57,6 +50,7 @@ void init_coords_and_forces(double *box, bool use_rand, const int particles_per_
 
 
 //mpi functions
+/**
 void init_map_cell_to_rank(double *box, int cpus_per_side, int ***map_cell_to_rank, int *map_rank_to_cell) {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
@@ -85,3 +79,4 @@ void assign_rank_to_box(double *box, int *n_particles_eachrank, int ***map_cell_
         n_particles_eachrank[rank]++;
     }
 }
+**/
