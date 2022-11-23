@@ -42,10 +42,7 @@ MPI_sim::~MPI_sim(){
 
 void MPI_sim::print_rank(const int rank){
     std::cout << rank << "dayo\n";
-}
-
-// private mpi functions
-void MPI_sim::init_map_cell_to_rank() {
+}void MPI_sim::init_map_cell_to_rank() {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
@@ -59,6 +56,9 @@ void MPI_sim::init_map_cell_to_rank() {
         }
     }
 }
+
+// private mpi functions
+
 void MPI_sim::assign_rank_to_box() {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++){

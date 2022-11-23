@@ -56,17 +56,19 @@ int main(int argc, char **argv) {
         for (int i = 0; i < max_rank; i++){
             printf("%d\n", n_particles_eachrank[i]);
         }
-        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
+        //mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
         //int i = 1;
         //MPI_Isend(n_particles_eachrank, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request);
     }
 
     // receive number of particles
+    /**
     if (rank < max_rank)  {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
         printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
+    **/
 
 
     /**
