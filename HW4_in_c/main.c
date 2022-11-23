@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
     init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
     assign_rank_to_box(box, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
 
+    /**
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
         //int i = 1;
@@ -69,6 +70,9 @@ int main(int argc, char **argv) {
         MPI_Wait(&request, &status);
         printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
+    **/
+
+
 
     /**
     //MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
