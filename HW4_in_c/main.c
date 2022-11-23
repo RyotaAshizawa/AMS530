@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
         dump_particles(box, "./test.xyz", N);
         // MPI definition
         init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell);
-        //assign_rank_to_box(box, N, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
+        assign_rank_to_box(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank);
         //mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
     }
 

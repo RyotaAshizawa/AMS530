@@ -68,7 +68,7 @@ void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_ra
         }
     }
 }
-void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, int ***map_cell_to_rank, const int cell_len_per_cpu, const int max_rank) {
+void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const int cell_len_per_cpu, const int max_rank) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
         n_particles_eachrank[i] = 0;
@@ -77,7 +77,7 @@ void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, in
         int cellno_in_x = floor(get_x(box[i]) / cell_len_per_cpu);
         int cellno_in_y = floor(get_y(box[i]) / cell_len_per_cpu);
         int cellno_in_z = floor(get_z(box[i]) / cell_len_per_cpu);
-        int rank = map_cell_to_rank[cellno_in_x][cellno_in_y][cellno_in_z];
+        int rank = map_cell_to_rank[cellno_in_x * cpu_per_side * cpu_per_side + cellno_in_y * cpu_per_side + cellno_in_z];
         set_rank(box[i], rank);
         n_particles_eachrank[rank]++;
     }
