@@ -15,7 +15,7 @@ void dump_particles(double **box, char filepath[], const int N){
     fprintf(fp, "%d\n", N);
     fprintf(fp, "Initial coordinate\n");
     for (int i = 0; i < N; i++) {
-        fprintf(fp, "He\t%f\t%f\t%f\n", box[i][0], box[i][1], box[z][2]);
+        fprintf(fp, "He\t%f\t%f\t%f\n", box[i][0], box[i][1], box[i][2]);
     }
     fclose(fp);
 }
@@ -54,8 +54,7 @@ void init_coords_and_forces(double **box, bool use_rand, const int N, const int 
 
 
 //mpi functions
-/**
-void init_map_cell_to_rank(double *box, int cpus_per_side, int ***map_cell_to_rank, int *map_rank_to_cell) {
+void init_map_cell_to_rank(int cpus_per_side, int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side], int *map_rank_to_cell) {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
@@ -69,18 +68,17 @@ void init_map_cell_to_rank(double *box, int cpus_per_side, int ***map_cell_to_ra
         }
     }
 }
-void assign_rank_to_box(double *box, int *n_particles_eachrank, int ***map_cell_to_rank, const int cell_len_per_cpu, const int max_rank) {
+void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, int ***map_cell_to_rank, const int cell_len_per_cpu, const int max_rank) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
         n_particles_eachrank[i] = 0;
     }
-    for (int i = 0; i < box->N; i++) {
-        int cellno_in_x = floor(get_x(&box->particles[i]) / cell_len_per_cpu);
-        int cellno_in_y = floor(get_y(&box->particles[i]) / cell_len_per_cpu);
-        int cellno_in_z = floor(get_z(&box->particles[i]) / cell_len_per_cpu);
+    for (int i = 0; i < N; i++) {
+        int cellno_in_x = floor(get_x(box[i]) / cell_len_per_cpu);
+        int cellno_in_y = floor(get_y(box[i]) / cell_len_per_cpu);
+        int cellno_in_z = floor(get_z(box[i]) / cell_len_per_cpu);
         int rank = map_cell_to_rank[cellno_in_x][cellno_in_y][cellno_in_z];
-        set_rank(&(box->particles)[i], rank);
+        set_rank(box[i], rank);
         n_particles_eachrank[rank]++;
     }
 }
-**/

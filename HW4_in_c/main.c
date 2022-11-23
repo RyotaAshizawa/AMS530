@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
     // mapping between cell and rank
     int *n_particles_eachrank = (int *)malloc(sizeof(int));
     int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3);
+    int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side];
     /**
-    int ***map_cell_to_rank = (int ***)malloc(sizeof(int**) * cpus_per_side);
     for (int i = 0; i < cpus_per_side; i++) {
         map_cell_to_rank[i] = (int **) malloc(sizeof(int*) * cpus_per_side);
         for (int j = 0; j < cpus_per_side; j++) {
@@ -54,22 +54,13 @@ int main(int argc, char **argv) {
     if (rank == 0) {
         init_coords_and_forces(box, true, N, particles_per_side, particle_cellsize);
         print_particles(box, N);
-        dump_particles(&box, "./test.xyz");
-    }
-
-    /**
-
-    if (rank == 0) {
-        print_particles(&box);
-
-        // assign mpi mapping
-        //init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
-        //assign_rank_to_box(box, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
+        dump_particles(box, "./test.xyz", N);
+        // MPI definition
+        init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell);
+        //assign_rank_to_box(box, N, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
         //mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
-        //int i = 1;
-        //MPI_Isend(n_particles_eachrank, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request);
     }
-    **/
+
 
     /**
     // receive number of particles
