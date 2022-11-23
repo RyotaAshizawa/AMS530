@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
         // send particles in the centered box
         mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag);
-        print_particles_special_rank(coords_each_rank, n_particles_eachrank, rank);
+        //print_particles_special_rank(coords_each_rank, n_particles_eachrank, rank);
     }
 
     // receive the data for the center box
