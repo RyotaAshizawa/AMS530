@@ -87,21 +87,34 @@ int main(int argc, char *argv[]){
 
     // initialize box and mpi things
     init_map_cell_to_rank(cpus_per_side, map_rank_to_cell, map_cell_to_rank);
-    assign_rank_to_box(box, max_rank, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu);
+    //assign_rank_to_box(box, max_rank, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu);
     if (rank == 0) {
-        box->print_particles();
+        //box->print_particles();
         for (int i = 0; i< max_rank; i++){
             std::cout << n_particles_eachrank[i] << std::endl;
         }
     }
 
     // send and recv number of particles in each mpi box
-    if (rank == 0) {
-       mpi_send_n_particles_eachrank(n_particles_eachrank, MPI_COMM_WORLD, &request, max_rank, tag);
-    }
+    //if (rank == 0) {
+    //   mpi_send_n_particles_eachrank(n_particles_eachrank, MPI_COMM_WORLD, &request, max_rank, tag);
+    //}
 
-    MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+    //MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+    int send_test = 0;
+    int recv_test[1];
+    std::cout << "Rank of the process..:" << rank << std::endl;
+
+    /**
+    if (rank == 0) {
+        for (int dst_rank = 0; dst_rank < max_rank; dst_rank++) {
+            std::cout << "Sending from...:" << dst_rank;
+            MPI_Isend(&send_test, 1, MPI_INT, dst_rank, tag, MPI_COMM_WORLD, &request);
+        }
+    }
+    MPI_Irecv(recv_test, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
     MPI_Wait(&request, &status);
+    **/
 
 
     MPI_Finalize();

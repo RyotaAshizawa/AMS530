@@ -12,7 +12,6 @@
 class Box {
 public:
     Box(const int N = 0, const int box_size = 0, const bool rand_coordinates = false);
-    ~Box();
 
     // member functions
     void print_particles();

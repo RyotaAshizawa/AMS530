@@ -12,15 +12,10 @@ Box::Box(const int N, const int box_size, const bool rand_coordinates) {
     particles_per_side = std::ceil(std::pow(N, 1./3.));
     particle_cellsize = box_size / double(particles_per_side);
     // new
-    particles = new Particle[N];
+    Particle particles[N];
     // initialization
     init_coords_and_forces(rand_coordinates);
 }
-
-Box::~Box() {
-    delete[] particles;
-}
-
 // member functions
 int Box::get_n_particles(){
     return N;
