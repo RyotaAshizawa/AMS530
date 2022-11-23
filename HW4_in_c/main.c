@@ -45,6 +45,7 @@ int main(int argc, char **argv) {
 
 
     // Box definition
+    /**
     if (rank == 0) {
         // Box setting
         Box *box = (Box *)malloc(sizeof(Box));
@@ -66,6 +67,7 @@ int main(int argc, char **argv) {
         //int i = 1;
         //MPI_Isend(n_particles_eachrank, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request);
     }
+    **/
 
     // receive number of particles
     /**
