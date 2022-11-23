@@ -43,6 +43,8 @@ int main(int argc, char **argv) {
     for (i = 0; i < N; i++){
         box[i] = (double *)malloc(sizeof(double) * 8);
     }
+
+    // initialize box
     if (rank == 0) {
         init_coords_and_forces(box, true, N, particles_per_side, particle_cellsize);
         print_particles(box, N);
@@ -55,11 +57,23 @@ int main(int argc, char **argv) {
     }
 
 
-    // receive number of particles
+    // Recv number of particles in each cell
     if (rank < max_rank && rank != 0)  {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
         printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
+    }
+
+    // Create array stores particle posistions for each rank
+    /**
+    double **coords_each_rank = (double **)malloc(sizeof(double*) * N);
+    for (i = 0; i < 8; i++){
+        coords_each_rank[i] = (double *)malloc(sizeof(double) * 4);
+    }
+    **/
+    double coords_each_rank[N][4];
+    if (rank == 0) {
+        get_particles_each_rank(box, N, coords_each_rank, max_rank);
     }
 
 

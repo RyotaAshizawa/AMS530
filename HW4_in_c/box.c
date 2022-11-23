@@ -82,3 +82,18 @@ void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, in
         n_particles_eachrank[rank]++;
     }
 }
+void get_particles_each_rank(double **box, const int N, double coords_each_rank[N][4], const int max_rank){
+    // array definition and initialize
+    int n_assigned_p_each_rank[max_rank];
+    for (int i = 0; i < max_rank; i++){
+        n_assigned_p_each_rank[i] = 0;
+    }
+    for (int i = 0; i < N; i++){
+        int rank = get_rank(box[i]);
+        coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 0] = get_x(box[i]);
+        coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 1] = get_y(box[i]);
+        coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 2] = get_z(box[i]);
+        coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 3] = get_id(box[i]);
+        n_assigned_p_each_rank[rank]++;
+    }
+}
