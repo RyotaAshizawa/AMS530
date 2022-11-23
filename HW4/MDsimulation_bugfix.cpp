@@ -96,12 +96,12 @@ int main(int argc, char *argv[]){
     }
 
     // send and recv number of particles in each mpi box
-    //if (rank == 0) {
-    //   mpi_send_n_particles_eachrank(n_particles_eachrank, MPI_COMM_WORLD, &request, max_rank, tag);
-    //}
+    if (rank == 0) {
+       mpi_send_n_particles_eachrank(n_particles_eachrank, MPI_COMM_WORLD, &request, max_rank, tag);
+    }
 
-    //MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
-    //MPI_Wait(&request, &status);
+    MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+    MPI_Wait(&request, &status);
 
 
     MPI_Finalize();
