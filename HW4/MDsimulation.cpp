@@ -4,6 +4,9 @@
 
 #include <iostream>
 #include <cmath>
+#include <fstream>
+#include <string>
+#include <mpi.h>
 
 
 class Particles{
@@ -90,7 +93,6 @@ public:
             MPI_Isend(particles_coord_rank[dst_rank], n_eachrank[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
         }
     }
-    /**
     void mpi_send_surrboxes_particles(MPI_Comm comm, MPI_Request *request, const int tag){
         for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
             // get particles sum in the surr box
@@ -121,7 +123,6 @@ public:
             MPI_Isend(surrbox_coords, n_in_surrbox * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
         }
     }
-    **/
     // file
 
 private:
@@ -315,7 +316,6 @@ int main(int argc, char *argv[]){
     MPI_Wait(&request, &status);
 
 
-    /**
     // recv particles in the main box for this processor
     double *particles_main_box = new double [n_eachrank[rank] * 4];
     MPI_Irecv(particles_main_box, n_eachrank[rank] * 4, MPI_DOUBLE, 0, mpi_tag_main_box, MPI_COMM_WORLD, &request);
@@ -354,7 +354,6 @@ int main(int argc, char *argv[]){
                       << surr_box_coords[i * 4 + 3] << ")" << std::endl;
         }
     }
-    **/
 
     // Calc force
     // return
