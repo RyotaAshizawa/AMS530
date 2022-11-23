@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
         init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
         assign_rank_to_box(box, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
 
-        /** printing **/
         for (int i = 0; i < max_rank; i++){
             printf("%d\n", n_particles_eachrank[i]);
         }
