@@ -25,6 +25,12 @@ Box::~Box() {
 int Box::get_n_particles(){
     return N;
 }
+int Box::get_box_size(){
+    return box_size;
+}
+Particle Box::get_particle(const int i){
+    return particles[i];
+}
 void Box::print_particles() {
     for (int i = 0; i < N; i++) {
         particles[i].print();
@@ -68,9 +74,12 @@ void Box::init_coords_and_forces(bool use_rand) {
         }
     }
 }
-void Box::mpi_send(MPI_Comm comm, MPI_Request *request, const int tag, const int size){
-    int sender = 10;
-    for (int rank = 0; rank < size; rank++) {
-       MPI_Isend(&sender, 1, MPI_INT, rank, tag, comm, request);
+void Box::set_coords(double *coords){
+    for (int i = 0; i < N; i++){
+        coords[i * 4 + 0] = particles[i].get_x();
+        coords[i * 4 + 1] = particles[i].get_y();
+        coords[i * 4 + 2] = particles[i].get_z();
+        coords[i * 4 + 3] = particles[i].get_id();
     }
 }
+

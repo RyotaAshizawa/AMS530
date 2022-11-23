@@ -20,6 +20,9 @@ public:
     void dump_particles(std::string &filepath);
     void mpi_send(MPI_Comm comm, MPI_Request *request, const int tag, const int size);
     int get_n_particles();
+    void set_coords(double *coords);
+    int get_box_size();
+    Particle get_particle(const int i);
 
 private:
     int N;
