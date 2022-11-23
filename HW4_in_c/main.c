@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 
     // mapping between cell and rank
     int *n_particles_eachrank = (int *)malloc(sizeof(int));
-    int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3);
+    int *map_rank_to_cell = (int *)malloc(sizeof(int) * 3 * max_rank);
     int *map_cell_to_rank = (int *)malloc(sizeof(int) * max_rank);
 
 
