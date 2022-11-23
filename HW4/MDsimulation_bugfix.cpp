@@ -41,7 +41,8 @@ int main(int argc, char *argv[]){
         //}
     }
     int recv[1];
-    MPI_Recv(recv, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, status);
+    MPI_Irecv(recv, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, request);
+    MPI_Wait(request, status);
     std::cout << "Rank:" << rank << ", " << "recv:"  << recv[0] << std::endl;
     MPI_Finalize();
     return 0;
