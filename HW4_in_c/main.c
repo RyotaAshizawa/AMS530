@@ -33,9 +33,15 @@ int main(int argc, char **argv) {
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
 
     // mapping between cell and rank
-    int n_particles_eachrank[max_rank];
-    int map_rank_to_cell[max_rank];
-    int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side];
+    int *n_particles_eachrank = (int *)malloc(sizeof(max_rank));
+    int *map_rank_to_cell = (int *)malloc(sizeof(max_rank) * 3);
+    int ***map_cell_to_rank = (int ***)malloc(sizeof(int**) * cpus_per_side);
+    for (int i = 0; i < cpus_per_side; i++) {
+        map_cell_to_rank[i] = (int **) malloc(sizeof(int*) * cpus_per_side);
+        for (int j = 0; j < cpus_per_side; j++) {
+            map_cell_to_rank[i][j] = (int *) malloc(sizeof(int) * cpus_per_side);
+        }
+    }
 
 
     // Box definition
@@ -50,7 +56,7 @@ int main(int argc, char **argv) {
 
         // assign mpi mapping
         init_map_cell_to_rank(box, cpus_per_side, map_cell_to_rank, map_rank_to_cell);
-        assign_rank_to_box(box, n_particles_eachrank, cpus_per_side, map_cell_to_rank, cell_len_per_cpu, max_rank);
+        assign_rank_to_box(box, n_particles_eachrank, map_cell_to_rank, cell_len_per_cpu, max_rank);
 
         /** printing **/
         for (int i = 0; i < max_rank; i++){

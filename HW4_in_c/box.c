@@ -58,7 +58,7 @@ void init_coords_and_forces(Box *box, bool use_rand, const int particles_per_sid
 
 
 //mpi functions
-void init_map_cell_to_rank(Box *box, int cpus_per_side, int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side], int *map_rank_to_cell) {
+void init_map_cell_to_rank(Box *box, int cpus_per_side, int ***map_cell_to_rank, int *map_rank_to_cell) {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
@@ -72,7 +72,7 @@ void init_map_cell_to_rank(Box *box, int cpus_per_side, int map_cell_to_rank[cpu
         }
     }
 }
-void assign_rank_to_box(Box *box, int *n_particles_eachrank, int cpus_per_side, int map_cell_to_rank[cpus_per_side][cpus_per_side][cpus_per_side], const int cell_len_per_cpu, const int max_rank) {
+void assign_rank_to_box(Box *box, int *n_particles_eachrank, int ***map_cell_to_rank, const int cell_len_per_cpu, const int max_rank) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
         n_particles_eachrank[i] = 0;
