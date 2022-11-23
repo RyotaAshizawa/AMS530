@@ -5,21 +5,21 @@
 #include "box.h"
 
 // member functions
-Particle get_particle(Box *box, const int i){
+Particle get_particle(double *box, const int i){
     return box->particles[i];
 }
-void print_particles(Box *box) {
+void print_particles(double *box) {
     for (int i = 0; i < box -> N; i++) {
         print_particle(&(box->particles)[i]);
     }
 }
-void set_box_size(Box *box, const double box_size){
+void set_box_size(double *box, const double box_size){
     box -> box_size = box_size;
 }
-void set_n_in_box(Box *box, const int N){
+void set_n_in_box(double *box, const int N){
     box -> N = N;
 }
-void dump_particles(Box *box, char filepath[]){
+void dump_particles(double *box, char filepath[]){
     FILE *fp = fopen(filepath, "w");
     fprintf(fp, "%d\n", box -> N);
     fprintf(fp, "Initial coordinate\n");
@@ -29,7 +29,7 @@ void dump_particles(Box *box, char filepath[]){
     fclose(fp);
 }
 
-void init_coords_and_forces(Box *box, bool use_rand, const int particles_per_side, const double particle_cellsize) {
+void init_coords_and_forces(double *box, bool use_rand, const int particles_per_side, const double particle_cellsize) {
     /** assume each particle locates at the center of each cell **/
     double x, y, z;
     int particle_count = 0;
@@ -57,7 +57,7 @@ void init_coords_and_forces(Box *box, bool use_rand, const int particles_per_sid
 
 
 //mpi functions
-void init_map_cell_to_rank(Box *box, int cpus_per_side, int ***map_cell_to_rank, int *map_rank_to_cell) {
+void init_map_cell_to_rank(double *box, int cpus_per_side, int ***map_cell_to_rank, int *map_rank_to_cell) {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
@@ -71,7 +71,7 @@ void init_map_cell_to_rank(Box *box, int cpus_per_side, int ***map_cell_to_rank,
         }
     }
 }
-void assign_rank_to_box(Box *box, int *n_particles_eachrank, int ***map_cell_to_rank, const int cell_len_per_cpu, const int max_rank) {
+void assign_rank_to_box(double *box, int *n_particles_eachrank, int ***map_cell_to_rank, const int cell_len_per_cpu, const int max_rank) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
         n_particles_eachrank[i] = 0;

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <mpi.h>
 #include "particle.h"
-#include "box.h"
+//#include "box.h"
 
 // mpi functions
 void mpi_send_n_particles_to_eachrank(int *n_particles_eachrank, const int tag, const int max_rank, MPI_Comm comm, MPI_Request *request){
@@ -47,7 +47,8 @@ int main(int argc, char **argv) {
 
 
     // Box definition
-    Box box; //first assign box memory
+    double *particle = (double *)malloc(sizeof(double) * 7); //first assign box memory
+    set_coordinate(particle, 0, 1, 2, 3, 4, 5, 6, 7);
     /**
     set_box_size(&box, box_size);
     set_n_in_box(&box, N); //set N before assign memory for particle
