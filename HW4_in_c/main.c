@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
     // mapping between cell and rank
     int *n_particles_eachrank = (int *)malloc(sizeof(max_rank));
     int *map_rank_to_cell = (int *)malloc(sizeof(max_rank) * 3);
+    /**
     int ***map_cell_to_rank = (int ***)malloc(sizeof(int**) * cpus_per_side);
     for (int i = 0; i < cpus_per_side; i++) {
         map_cell_to_rank[i] = (int **) malloc(sizeof(int*) * cpus_per_side);
@@ -42,10 +43,12 @@ int main(int argc, char **argv) {
             map_cell_to_rank[i][j] = (int *) malloc(sizeof(int) * cpus_per_side);
         }
     }
+    **/
 
 
     // Box definition
     Box box; //first assign box memory
+    /**
     set_box_size(&box, box_size);
     set_n_in_box(&box, N); //set N before assign memory for particle
     box.particles = (Particle *) malloc(sizeof(Particle) * (box.N)); //assign
@@ -62,6 +65,7 @@ int main(int argc, char **argv) {
         //int i = 1;
         //MPI_Isend(n_particles_eachrank, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request);
     }
+    **/
 
     /**
     // receive number of particles
