@@ -68,7 +68,7 @@ void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_ra
         }
     }
 }
-void assign_rank_to_box(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const int cell_len_per_cpu, const int max_rank) {
+void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const int cell_len_per_cpu, const int max_rank) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
         n_particles_eachrank[i] = 0;
@@ -98,13 +98,102 @@ void get_particles_each_rank(double **box, const int N, double **coords_each_ran
     }
 }
 void print_particles_special_rank(double **coords_each_rank, int *n_particles_eachrank, const int rank){
+    printf("Coords for rank %d:\n", rank);
     for (int i = 0; i < n_particles_eachrank[rank]; i++){
         double *coords_this_rank = coords_each_rank[rank];
         printf("(x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", coords_this_rank[4 * i + 0], coords_this_rank[4 * i + 1], coords_this_rank[4 * i + 2], (int)coords_this_rank[4 * i + 3]);
     }
 }
-void print_particles_centerbox_special_rank(double *particles_center_box, int particles_in_centerbox){
-    for (int i = 0; i < particles_in_centerbox; i++){
-        printf("(x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", particles_center_box[4 * i + 0], particles_center_box[4 * i + 1], particles_center_box[4 * i + 2], (int)particles_center_box[4 * i + 3]);
+void print_particles_in_box(double *particles_coords, int particles_in_box){
+    for (int i = 0; i < particles_in_box; i++){
+        printf("%d, (x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", i, particles_coords[4 * i + 0], particles_coords[4 * i + 1], particles_coords[4 * i + 2], (int)particles_coords[4 * i + 3]);
+    }
+}
+int get_startidx_of_surrboxes(const int centered_box_idx){
+    int start_idx = centered_box_idx - 1;
+    if (start_idx < 0) {
+        start_idx = 0;
+    }
+    return start_idx;
+}
+int get_endidx_of_surrboxes(const int cpus_per_side, const int centered_box_idx){
+    int end_idx = centered_box_idx + 1;
+    if (cpus_per_side <= end_idx) {
+        end_idx = cpus_per_side - 1;
+    }
+    return end_idx;
+}
+void get_n_surrboxes(const int max_rank, const int cpus_per_side, int *map_rank_to_cell, int *map_rank_to_n_surrcells){
+    for (int rank = 0; rank < max_rank; rank++) {
+        int i_centered_box = map_rank_to_cell[rank * 3 + 0];
+        int j_centered_box = map_rank_to_cell[rank * 3 + 1];
+        int k_centered_box = map_rank_to_cell[rank * 3 + 2];
+        //std::cout << "Rank:" << rank << ", " << "x, y, z" << cell_main_x << cell_main_y << cell_main_z << std::endl;
+
+        // define search range
+        int i_start = get_startidx_of_surrboxes(i_centered_box);
+        int j_start = get_startidx_of_surrboxes(j_centered_box);
+        int k_start = get_startidx_of_surrboxes(k_centered_box);
+        int i_end = get_endidx_of_surrboxes(cpus_per_side, i_centered_box);
+        int j_end = get_endidx_of_surrboxes(cpus_per_side, j_centered_box);
+        int k_end = get_endidx_of_surrboxes(cpus_per_side, k_centered_box);
+
+        // initialization
+        map_rank_to_n_surrcells[rank] = 0;
+
+        //get number of surrownding cells
+        for (int i = i_start; i <= i_end; i++) {
+            for (int j = j_start; j <= j_end; j++) {
+                for (int k = k_start; k <= k_end; k++) {
+                    if ((i != i_centered_box) || (j != j_centered_box) || (k != k_centered_box)) {
+                        map_rank_to_n_surrcells[rank]++;
+                        //printf("Peripheral boxes of (%d, %d, %d): (x, y, z) = (%d, %d, %d)\n", i_centered_box, j_centered_box, k_centered_box, i, j, k);
+                    }
+                }
+            }
+        }
+        //printf("N of peripheral boxes for (%d, %d, %d): %d\n", i_centered_box, j_centered_box, k_centered_box, map_rank_to_n_surrcells[rank]);
+    }
+}
+void get_rank_of_surrboxes(const int max_rank, const int cpus_per_side, int *map_rank_to_cell, int *map_cell_to_rank, int **map_rank_to_ranks_of_surrcells){
+    for (int rank = 0; rank < max_rank; rank++) {
+        int i_centered_box = map_rank_to_cell[rank * 3 + 0];
+        int j_centered_box = map_rank_to_cell[rank * 3 + 1];
+        int k_centered_box = map_rank_to_cell[rank * 3 + 2];
+        //std::cout << "Rank:" << rank << ", " << "x, y, z" << cell_main_x << cell_main_y << cell_main_z << std::endl;
+
+        // define search range
+        int i_start = get_startidx_of_surrboxes(i_centered_box);
+        int j_start = get_startidx_of_surrboxes(j_centered_box);
+        int k_start = get_startidx_of_surrboxes(k_centered_box);
+        int i_end = get_endidx_of_surrboxes(cpus_per_side, i_centered_box);
+        int j_end = get_endidx_of_surrboxes(cpus_per_side, j_centered_box);
+        int k_end = get_endidx_of_surrboxes(cpus_per_side, k_centered_box);
+
+        //loop for surrownding cells
+        int count = 0;
+        for (int i = i_start; i <= i_end; i++) {
+            for (int j = j_start; j <= j_end; j++) {
+                for (int k = k_start; k <= k_end; k++) {
+                    if ((i != i_centered_box) || (j != j_centered_box) || (k != k_centered_box)) {
+                        int surr_rank = map_cell_to_rank[i * cpus_per_side * cpus_per_side + j * cpus_per_side + k];
+                        map_rank_to_ranks_of_surrcells[rank][count] = surr_rank;
+                        count++;
+                        //printf("Surr rank for rank %d: %d\n", rank, surr_rank);
+                    }
+                }
+            }
+        }
+        //printf("N of peripheral boxes for (%d, %d, %d): %d\n", i_centered_box, j_centered_box, k_centered_box, count);
+    }
+}
+void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_particles_in_surrcells, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells, int *n_particles_eachrank) {
+    for (int rank = 0; rank < max_rank; rank++){
+        map_rank_to_n_particles_in_surrcells[rank] = 0; //init
+        for (int i_surr = 0; i_surr < map_rank_to_n_surrcells[rank]; i_surr++) {
+            int surr_rank = map_rank_to_ranks_of_surrcells[rank][i_surr];
+            map_rank_to_n_particles_in_surrcells[rank] += n_particles_eachrank[surr_rank];
+        }
+        //printf("Total particles in the surrownding box for rank %d: %d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
     }
 }
