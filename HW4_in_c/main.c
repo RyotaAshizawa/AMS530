@@ -80,12 +80,13 @@ int main(int argc, char **argv) {
     int *map_rank_to_n_surrcells = (int *) malloc(sizeof(int) * max_rank);
     int **map_rank_to_ranks_of_surrcells = (int **) malloc(sizeof(int *) * max_rank);
     for (i = 0; i < max_rank; i++) {
-        map_rank_to_ranks_of_surrcells[i] = (int *) malloc(sizeof(int) * 26); // 26 is the max possible n of surr cells
+        map_rank_to_ranks_of_surrcells[i] = (int *) malloc(sizeof(int) * 27); // 26 is the max possible n of surr cells
     }
     double *particles_surr_box = (double *) malloc(sizeof(double) * 4 * N);
     int *map_rank_to_n_particles_in_surrcells = (int *) malloc(sizeof(int) * max_rank);
     double *temp_coords_surrcells = (double *) malloc(sizeof(double) * 4 * N);
     double *force_and_id = (double *) malloc(sizeof(double) * 4 * N);
+
 
     // Box definition
     for (i = 0; i < N; i++) {
@@ -152,10 +153,11 @@ int main(int argc, char **argv) {
     }
 
     //// 6. Send and recv the paricle coords in the surrownding cells
-    double *coords_peripheral_box = (double *) malloc(sizeof(double) * 4 * N * 4);
+    double *coords_peripheral_box = (double *) malloc(sizeof(double) * 4 * N);
     if (rank == 0) {
         mpi_send_surrbox_particles(n_particles_eachrank, temp_coords_surrcells, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, coords_each_rank, max_rank, N, MPI_COMM_WORLD, &request, tag);
     }
+    /**
     if (rank < max_rank) {
         MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
@@ -166,7 +168,6 @@ int main(int argc, char **argv) {
     }
 
     //// 7. Calculate the force of each main box
-    /**
     if (rank == 0) {
         double *coords1 = (double *) malloc(sizeof(double) * 4);
         double *coords2 = (double *) malloc(sizeof(double) * 4);
@@ -184,7 +185,6 @@ int main(int argc, char **argv) {
         add_force_between_two_particles_to_vector(force_and_id, coords2, coords1);
         printf("Accumulated (Fx, Fy, Fz) = (%f, %f %f) for id %d\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3]);
     }
-    **/
 
     //// 8. Calculate force inside the main box
     for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++){
@@ -207,6 +207,7 @@ int main(int argc, char **argv) {
                                                       rank);
         }
     }
+    **/
     //printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
 
 
