@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
-        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request1, tag + 4);
+        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request);
     }
     if (rank < max_rank) {
         MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
