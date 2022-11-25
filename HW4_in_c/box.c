@@ -199,6 +199,8 @@ void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_parti
 }
 void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells){
     // get values
+    printf("All loop values \n");
+    printf("%d, %d\n", map_rank_to_n_surrcells[0], n_particles_eachrank[0]);
     for (int rank; rank < max_rank; rank++){
         int processed_temp_n_particles = 0;
         for (int i_surr_rank = 0; i_surr_rank < map_rank_to_n_surrcells[rank]; i_surr_rank++) {
