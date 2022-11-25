@@ -29,8 +29,14 @@ int main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Request request;
-    MPI_Status status;
+    MPI_Request request0;
+    MPI_Request request1;
+    MPI_Request request2;
+    MPI_Request request3;
+    MPI_Status status0;
+    MPI_Status status1;
+    MPI_Status status2;
+    MPI_Status status3;
 
     // box variables
     int N = atoi(argv[1]);
@@ -84,13 +90,13 @@ int main(int argc, char **argv) {
         print_particles(box, N); // check it
 
         //// 2. Send number of particles of each cell
-        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag + 2, max_rank, MPI_COMM_WORLD, &request);
+        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag + 2, max_rank, MPI_COMM_WORLD, &request0);
 
         //// 3. Copy particle positions of each cell
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
 
         //// 4. Send and recv the position of particles in the center box
-        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag + 4);
+        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request1, tag + 4);
 
         //// 5. Get info about surrownding particles
         get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
@@ -103,23 +109,23 @@ int main(int argc, char **argv) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
 
         //// 6. Send data of peripheral boxes
-        mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag + 6, max_rank, MPI_COMM_WORLD, &request);
-        mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag + 8);
+        mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag + 6, max_rank, MPI_COMM_WORLD, &request2);
+        mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request3, tag + 8);
 
     }
 
     //// 2-recv. recv number of particles of each cell
     if (rank < max_rank) {
-        MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag + 2, MPI_COMM_WORLD, &request);
-        MPI_Wait(&request, &status);
+        MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag + 2, MPI_COMM_WORLD, &request0);
+        MPI_Wait(&request0, &status0);
         //printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
 
     // receive the data for the centered box
     //// 4-recv Send and recv the position of particles in the center box
     if (rank < max_rank) {
-        MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag + 4, MPI_COMM_WORLD, &request);
-        MPI_Wait(&request, &status);
+        MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag + 4, MPI_COMM_WORLD, &request1);
+        MPI_Wait(&request1, &status1);
     }
     if (rank == 16) {
         //printf("Received particles for the center box for rank %d:\n", rank);
@@ -128,12 +134,12 @@ int main(int argc, char **argv) {
 
     //// 6-recv. Send and recv the number of particles in surrownding cells
     if (rank < max_rank) {
-        MPI_Irecv(map_rank_to_n_particles_in_surrcells, max_rank, MPI_INT, 0, tag + 6, MPI_COMM_WORLD, &request);
-        MPI_Wait(&request, &status);
+        MPI_Irecv(map_rank_to_n_particles_in_surrcells, max_rank, MPI_INT, 0, tag + 6, MPI_COMM_WORLD, &request2);
+        MPI_Wait(&request2, &status2);
         //printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
 
-        MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag + 8, MPI_COMM_WORLD, &request);
-        MPI_Wait(&request, &status);
+        MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag + 8, MPI_COMM_WORLD, &request3);
+        MPI_Wait(&request3, &status3);
         if (rank == 16) {
             printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[rank], rank);
             print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
