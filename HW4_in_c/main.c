@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     for (i = 0; i < max_rank; i++) {
         map_rank_to_coords_surrbox[i] = (double *) malloc(sizeof(double) * N * 4); // 26 is the max possible n of surr cells
     }
-    double *coords_peripheral_box = (double *) malloc(sizeof(double *) * N + 4);
+    double *coords_peripheral_box = (double *) malloc(sizeof(double *) * N * 4);
 
 
     // Box definition
