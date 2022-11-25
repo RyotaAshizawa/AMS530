@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
     //// 6. Send-recv cooridinates of surr cells
     // allocate memory first
     for (int rank = 0; rank < max_rank; rank++) {
-        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * N * 4);
+        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
     }
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
@@ -136,7 +136,6 @@ int main(int argc, char **argv) {
         printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[16], 16);
         print_particles_in_box(map_rank_to_coords_surrbox[16], map_rank_to_n_particles_in_surrcells[16]);
     }
-    /**
     if (rank < max_rank) {
         MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
@@ -145,7 +144,6 @@ int main(int argc, char **argv) {
             print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
         }
     }
-    **/
 
     /**
 
