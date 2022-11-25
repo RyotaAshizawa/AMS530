@@ -101,12 +101,12 @@ void print_particles_special_rank(double **coords_each_rank, int *n_particles_ea
     printf("Coords for rank %d:\n", rank);
     for (int i = 0; i < n_particles_eachrank[rank]; i++){
         double *coords_this_rank = coords_each_rank[rank];
-        printf("(x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", coords_this_rank[4 * i + 0], coords_this_rank[4 * i + 1], coords_this_rank[4 * i + 2], (int)coords_this_rank[4 * i + 3]);
+        printf("(x, y, z, id, rank) = (%.2f, %.2f, %.2f, %d, %d)\n", coords_this_rank[4 * i + 0], coords_this_rank[4 * i + 1], coords_this_rank[4 * i + 2], (int)coords_this_rank[4 * i + 3], rank);
     }
 }
 void print_particles_in_box(double *particles_coords, int particles_in_box){
     for (int i = 0; i < particles_in_box; i++){
-        printf("%d, (x, y, z, rank) = (%.2f, %.2f, %.2f, %d)\n", i, particles_coords[4 * i + 0], particles_coords[4 * i + 1], particles_coords[4 * i + 2], (int)particles_coords[4 * i + 3]);
+        printf("%d, (x, y, z, id) = (%.2f, %.2f, %.2f, %d)\n", i, particles_coords[4 * i + 0], particles_coords[4 * i + 1], particles_coords[4 * i + 2], (int)particles_coords[4 * i + 3]);
     }
 }
 int get_startidx_of_surrboxes(const int centered_box_idx){
