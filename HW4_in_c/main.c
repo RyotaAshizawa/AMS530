@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     }
     if (rank == 16) {
         printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[rank], rank);
-        print_particles_in_box(map_rank_to_n_particles_in_surrcells[rank], map_rank_to_n_particles_in_surrcells[rank]);
+        print_particles_in_box(map_rank_to_coords_surrbox[rank], map_rank_to_n_particles_in_surrcells[rank]);
     }
     /**
     if (rank < max_rank) {
