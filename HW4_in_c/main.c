@@ -145,8 +145,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    /**
-
 
     //// 7. Calculate the force of each main box
     if (rank == 0) {
@@ -188,7 +186,6 @@ int main(int argc, char **argv) {
                                                       rank);
         }
     }
-    **/
     //printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
 
 
