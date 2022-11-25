@@ -108,9 +108,21 @@ int main(int argc, char **argv) {
         print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
     }
 
+    //// 4. Get info of peripheral cells
+    if (rank == 0){
+        get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
+        get_rank_of_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_cell_to_rank, map_rank_to_ranks_of_surrcells);
+        get_tot_particles_in_surrboxes(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, n_particles_eachrank);
+        // allocate memory first
+        for (int rank = 0; rank < max_rank; rank++) {
+            map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
+        }
+        map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
+        //// 6. Send data of peripheral boxes
+        //mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag + 6, max_rank, MPI_COMM_WORLD, &request2);
+        //mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request3, tag + 8);
+    }
     /**
-    //// 6-recv. Send and recv the number of particles in surrownding cells
-    //// 4. Send and recv the position of particles in the center box
     if (rank == 0) {
     }
     if (rank < max_rank) {
@@ -126,20 +138,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (rank == 0){
-        //// 5. Get info about surrownding particles
-        get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
-        get_rank_of_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_cell_to_rank, map_rank_to_ranks_of_surrcells);
-        get_tot_particles_in_surrboxes(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, n_particles_eachrank);
-        // allocate memory first
-        for (int rank = 0; rank < max_rank; rank++) {
-            map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
-        }
-        map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
-        //// 6. Send data of peripheral boxes
-        mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag + 6, max_rank, MPI_COMM_WORLD, &request2);
-        mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request3, tag + 8);
-    }
+    //// 6-recv. Send and recv the number of particles in surrownding cells
 
 
     //// 7. Calculate the force of each main box
