@@ -128,8 +128,7 @@ int main(int argc, char **argv) {
     //// 6. Send-recv cooridinates of surr cells
     // allocate memory first
     for (int rank = 0; rank < max_rank; rank++) {
-        printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
-        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
+        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * N * 4);
     }
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
