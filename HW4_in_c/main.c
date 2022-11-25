@@ -129,17 +129,22 @@ int main(int argc, char **argv) {
         MPI_Wait(&request, &status);
         printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
     }
-    /**
 
-        MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag + 8, MPI_COMM_WORLD, &request3);
+    //// 6. Send-recv cooridinates of surr cells
+    if (rank == 0) {
+        mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag);
+    }
+    /**
+    if (rank < max_rank) {
+        MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request3, &status3);
         if (rank == 16) {
-            printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[rank], rank);
+            printf("%d particles are received for the peripheral box for rank %d:\n",
+                   map_rank_to_n_particles_in_surrcells[rank], rank);
             print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
         }
-        //mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request3, tag + 8);
+    }
 
-    //// 6-recv. Send and recv the number of particles in surrownding cells
 
 
     //// 7. Calculate the force of each main box
