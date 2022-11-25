@@ -34,9 +34,8 @@ void copy_coords_surrcells(int rank, double *temp_coords_surrcells, double **coo
         }
     }
 }
-void mpi_send_surrbox_particles(int *n_particles_eachrank, int *map_rank_to_n_particles_in_surrcells, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells, double **coords_each_rank, int max_rank, int N, MPI_Comm comm, MPI_Request *request, const int tag){
+void mpi_send_surrbox_particles(int *n_particles_eachrank, double *temp_coords_surrcells, int *map_rank_to_n_particles_in_surrcells, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells, double **coords_each_rank, int max_rank, int N, MPI_Comm comm, MPI_Request *request, const int tag){
     for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
-        double *temp_coords_surrcells = (double *) malloc(sizeof(double) * 4 * map_rank_to_n_particles_in_surrcells[dst_rank]);
         //printf("Dst rank: %d\n", dst_rank);
         copy_coords_surrcells(dst_rank, temp_coords_surrcells, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
         MPI_Isend(temp_coords_surrcells, map_rank_to_n_particles_in_surrcells[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
@@ -45,7 +44,6 @@ void mpi_send_surrbox_particles(int *n_particles_eachrank, int *map_rank_to_n_pa
             //printf("N  surr cells for Rank %d: %d \n", dst_rank, map_rank_to_n_surrcells[dst_rank]); // map_rank_to_n_surrcells is OK
             //print_particles_in_box(temp_coords_surrcells, map_rank_to_n_particles_in_surrcells[dst_rank]);
         }
-        free(temp_coords_surrcells);
     }
 }
 
