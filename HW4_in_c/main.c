@@ -146,7 +146,8 @@ int main(int argc, char **argv) {
     }
 
 
-    //// 7. Calculate the force of each main box
+    //// 7. force debugger
+    /**
     if (rank == 0) {
         double *coords1 = (double *) malloc(sizeof(double) * 4);
         double *coords2 = (double *) malloc(sizeof(double) * 4);
@@ -164,6 +165,7 @@ int main(int argc, char **argv) {
         add_force_between_two_particles_to_vector(force_and_id, coords2, coords1);
         printf("Accumulated (Fx, Fy, Fz) = (%f, %f %f) for id %d\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3]);
     }
+    **/
 
     //// 8. Calculate force inside the main box
     for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++){
