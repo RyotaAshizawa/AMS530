@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
             map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4); // 26 is the max possible n of surr cells
         }
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
-        print_particles_in_box(map_rank_to_coords_surrbox[16], 198);
+        print_particles_in_box(map_rank_to_coords_surrbox[rank], 198);
     }
 
     //// 5. Send and recv the number of particles in surrownding cells
