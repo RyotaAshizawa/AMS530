@@ -38,7 +38,7 @@ void mpi_send_surrbox_particles(int *n_particles_eachrank, double *temp_coords_s
     for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
         //printf("Dst rank: %d\n", dst_rank);
         copy_coords_surrcells(dst_rank, temp_coords_surrcells, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
-        MPI_Isend(temp_coords_surrcells, map_rank_to_n_particles_in_surrcells[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
+        //MPI_Isend(temp_coords_surrcells, map_rank_to_n_particles_in_surrcells[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
         if (dst_rank == 16){
             //printf("N in surr cells for Rank %d: %d \n", dst_rank, map_rank_to_n_particles_in_surrcells[dst_rank]); // map_rank_to_n_particles_in_surrcells is OK
             //printf("N  surr cells for Rank %d: %d \n", dst_rank, map_rank_to_n_surrcells[dst_rank]); // map_rank_to_n_surrcells is OK
