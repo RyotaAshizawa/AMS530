@@ -198,6 +198,10 @@ void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_parti
     }
 }
 void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells){
+    // allocate memory first
+    for (int rank = 0; rank < max_rank; rank++) {
+        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4); // 26 is the max possible n of surr cells
+    }
     // get values
     for (int rank; rank < max_rank; rank++){
         int processed_temp_n_particles = 0;
