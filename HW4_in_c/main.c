@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
     double *force_and_id = (double *) malloc(sizeof(double) * 4 * N);
     double **map_rank_to_coords_surrbox = (double **) malloc(sizeof(double *) * max_rank);
     for (i = 0; i < max_rank; i++) {
-        map_rank_to_coords_surrbox[i] = (int *) malloc(sizeof(double) * N * 4); // 26 is the max possible n of surr cells
+        map_rank_to_coords_surrbox[i] = (double *) malloc(sizeof(double) * N * 4); // 26 is the max possible n of surr cells
     }
 
 
