@@ -200,16 +200,14 @@ void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_parti
 void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells){
     // get values
     int processed_temp_n_particles = 0;
-    printf("All loop values \n");
-    printf("%d, %d, %d\n", max_rank, map_rank_to_n_surrcells[0], n_particles_eachrank[0]);
     for (int rank = 0; rank < max_rank; rank++){
         processed_temp_n_particles = 0;
         for (int i_surr_rank = 0; i_surr_rank < map_rank_to_n_surrcells[rank]; i_surr_rank++) {
             int surr_rank = map_rank_to_ranks_of_surrcells[rank][i_surr_rank];
-            if (rank == 16) {
-                printf("Original coords for rank %d:\n", surr_rank);
-                print_particles_in_box(coords_each_rank[surr_rank], n_particles_eachrank[surr_rank]);
-            }
+            //if (rank == 16) {
+            //    printf("Original coords for rank %d:\n", surr_rank);
+            //    print_particles_in_box(coords_each_rank[surr_rank], n_particles_eachrank[surr_rank]);
+            //}
             for (int j_particle = 0; j_particle < n_particles_eachrank[surr_rank]; j_particle++){
                 map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 0] = coords_each_rank[surr_rank][j_particle * 4 + 0];
                 map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 1] = coords_each_rank[surr_rank][j_particle * 4 + 1];
