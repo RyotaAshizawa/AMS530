@@ -116,6 +116,7 @@ int main(int argc, char **argv) {
     }
 
     //// 5. Send-recv n particles of surr cells
+    /**
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag, max_rank, MPI_COMM_WORLD, &request);
     }
@@ -126,7 +127,6 @@ int main(int argc, char **argv) {
     }
 
     //// 6. Send-recv cooridinates of surr cells
-    /**
     // allocate memory first
     for (int rank = 0; rank < max_rank; rank++) {
         map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
