@@ -165,7 +165,6 @@ int main(int argc, char **argv) {
         add_force_between_two_particles_to_vector(force_and_id, coords2, coords1);
         printf("Accumulated (Fx, Fy, Fz) = (%f, %f %f) for id %d\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3]);
     }
-    **/
 
     //// 8. Calculate force inside the main box
     for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++){
@@ -190,6 +189,7 @@ int main(int argc, char **argv) {
     }
     printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
 
+    **/
 
     /**
     //MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
