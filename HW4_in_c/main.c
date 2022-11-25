@@ -29,14 +29,8 @@ int main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Request request0;
-    MPI_Request request1;
-    MPI_Request request2;
-    MPI_Request request3;
-    MPI_Status status0;
-    MPI_Status status1;
-    MPI_Status status2;
-    MPI_Status status3;
+    MPI_Request request;
+    MPI_Status status;
 
     // box variables
     int N = atoi(argv[1]);
@@ -89,18 +83,18 @@ int main(int argc, char **argv) {
         assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank);
         print_particles(box, N); // check it
     }
-    /**
 
     //// 2-recv. recv number of particles of each cell
     if (rank == 0) {
-        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag + 2, max_rank, MPI_COMM_WORLD, &request0);
+        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
     }
     if (rank < max_rank) {
-        MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag + 2, MPI_COMM_WORLD, &request0);
-        MPI_Wait(&request0, &status0);
-        //printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
+        MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
+        MPI_Wait(&request, &status);
+        printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
 
+    /**
     // receive the data for the centered box
     //// 3. Copy particle positions of each cell
     if (rank == 0) {
