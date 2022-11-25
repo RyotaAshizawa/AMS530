@@ -124,6 +124,7 @@ int main(int argc, char **argv) {
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag, max_rank, MPI_COMM_WORLD, &request);
     }
+    /**
     if (rank < max_rank) {
         MPI_Irecv(map_rank_to_n_particles_in_surrcells, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
@@ -142,7 +143,6 @@ int main(int argc, char **argv) {
             print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
         }
     }
-    /**
 
 
 
