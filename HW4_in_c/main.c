@@ -89,8 +89,6 @@ int main(int argc, char **argv) {
         assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank);
         print_particles(box, N); // check it
 
-        //// 2. Send number of particles of each cell
-        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag + 2, max_rank, MPI_COMM_WORLD, &request0);
 
         //// 3. Copy particle positions of each cell
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
@@ -115,12 +113,16 @@ int main(int argc, char **argv) {
     }
 
     //// 2-recv. recv number of particles of each cell
+    if (rank == 0) {
+        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag + 2, max_rank, MPI_COMM_WORLD, &request0);
+    }
     if (rank < max_rank) {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag + 2, MPI_COMM_WORLD, &request0);
         MPI_Wait(&request0, &status0);
         //printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
 
+    /**
     // receive the data for the centered box
     //// 4-recv Send and recv the position of particles in the center box
     if (rank < max_rank) {
@@ -146,7 +148,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    /**
 
     //// 7. Calculate the force of each main box
     if (rank == 0) {
