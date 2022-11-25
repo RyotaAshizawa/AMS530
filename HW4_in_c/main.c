@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
     //// 6. Send and recv the paricle coords in the surrownding cells
     double *coords_peripheral_box = (double *) malloc(sizeof(double) * 4 * N * 4);
     if (rank == 0) {
-        mpi_send_surrbox_particles(n_particles_eachrank, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, coords_each_rank, max_rank, N, MPI_COMM_WORLD, &request, tag);
+        mpi_send_surrbox_particles(n_particles_eachrank, temp_coords_surrcells, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, coords_each_rank, max_rank, N, MPI_COMM_WORLD, &request, tag);
     }
     if (rank < max_rank) {
         MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
