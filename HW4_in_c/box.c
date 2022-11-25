@@ -68,6 +68,7 @@ void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_ra
         }
     }
 }
+
 void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const int cell_len_per_cpu, const int max_rank) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
