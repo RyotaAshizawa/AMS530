@@ -197,3 +197,41 @@ void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_parti
         //printf("Total particles in the surrownding box for rank %d: %d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
     }
 }
+void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells){
+    // allocate memory first
+    for (int rank = 0; rank < max_rank; rank++) {
+        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4); // 26 is the max possible n of surr cells
+    }
+    // get values
+    for (int rank; rank < max_rank; rank++){
+        int processed_temp_n_particles = 0;
+        for (int i_surr_rank = 0; i_surr_rank < map_rank_to_n_surrcells[rank]; i_surr_rank++) {
+            int surr_rank = map_rank_to_ranks_of_surrcells[rank][i_surr_rank];
+            if (rank == 16) {
+                //printf("Original coords for rank %d:\n", surr_rank);
+                //print_particles_in_box(coords_each_rank[surr_rank], n_particles_eachrank[surr_rank]);
+            }
+            for (int j_particle = 0; j_particle < n_particles_eachrank[surr_rank]; j_particle++){
+                map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 0] = coords_each_rank[surr_rank][j_particle * 4 + 0];
+                map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 1] = coords_each_rank[surr_rank][j_particle * 4 + 1];
+                map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 2] = coords_each_rank[surr_rank][j_particle * 4 + 2];
+                map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 3] = coords_each_rank[surr_rank][j_particle * 4 + 3];
+                if (rank == 1600) {
+                    printf("%d, (x, y, z, id) = (%.2f, %.2f, %.2f, %d)\n", processed_temp_n_particles,
+                           coords_each_rank[surr_rank][j_particle * 4 + 0],
+                           coords_each_rank[surr_rank][j_particle * 4 + 1],
+                           coords_each_rank[surr_rank][j_particle * 4 + 2],
+                           (int) coords_each_rank[surr_rank][j_particle * 4 + 3]);
+                }
+                if (rank == 16) {
+                    printf("%d, (x, y, z, id) = (%.2f, %.2f, %.2f, %d)\n", processed_temp_n_particles,
+                           map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 0],
+                           map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 1],
+                           map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 2],
+                           (int)map_rank_to_coords_surrbox[rank][processed_temp_n_particles * 4 + 3]);
+                }
+                processed_temp_n_particles = processed_temp_n_particles + 1;
+            }
+        }
+    }
+}
