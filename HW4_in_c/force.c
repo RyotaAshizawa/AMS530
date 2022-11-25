@@ -28,12 +28,12 @@ void add_force_between_two_particles_to_vector(double *forces_and_id, double *j_
     double force_x = force_term1_x + force_term2_x;
     double force_y = force_term1_y + force_term2_y;
     double force_z = force_term1_z + force_term2_z;
-    //if (isnan(force_x) || isnan(force_y) || isnan(force_z)){
-     //   printf("Nan happend for ((x1, y1, z1, id), (x2, y2, z2, id), dist) = ((%f, %f, %f, %d), (%f, %f, %f, %d), %f) in the rank %d\n",
-      //         i_coords[0], i_coords[1], i_coords[2], (int)i_coords[3],
-       //        j_coords[0], j_coords[1], j_coords[2], (int)j_coords[3],
-        //       dist, rank);
- //   }
+    if (isnan(force_x) || isnan(force_y) || isnan(force_z)){
+        printf("Nan happend for ((x1, y1, z1, id), (x2, y2, z2, id), dist) = ((%f, %f, %f, %d), (%f, %f, %f, %d), %f) in the rank %d\n",
+               i_coords[0], i_coords[1], i_coords[2], (int)i_coords[3],
+               j_coords[0], j_coords[1], j_coords[2], (int)j_coords[3],
+               dist, rank);
+    }
 
     forces_and_id[0] += force_x;
     forces_and_id[1] += force_y;

@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
     }
 
     //// 6. Send-recv cooridinates of surr cells
+    /**
     // allocate memory first
     for (int rank = 0; rank < max_rank; rank++) {
         map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
@@ -147,7 +148,6 @@ int main(int argc, char **argv) {
 
 
     //// 7. force debugger
-    /**
     if (rank == 0) {
         double *coords1 = (double *) malloc(sizeof(double) * 4);
         double *coords2 = (double *) malloc(sizeof(double) * 4);
@@ -188,7 +188,7 @@ int main(int argc, char **argv) {
                                                       rank);
         }
     }
-    //printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
+    printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
 
 
     /**
