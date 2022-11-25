@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
         print_particles(box, N); // check it
     }
 
+    /**
     //// 2. Send-Recv number of particles of each cell
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
@@ -116,7 +117,6 @@ int main(int argc, char **argv) {
     }
 
     //// 5. Send-recv n particles of surr cells
-    /**
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag, max_rank, MPI_COMM_WORLD, &request);
     }
