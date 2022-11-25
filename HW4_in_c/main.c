@@ -97,10 +97,11 @@ int main(int argc, char **argv) {
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
+        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request1, tag + 4);
     }
     if (rank < max_rank) {
-        MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag + 4, MPI_COMM_WORLD, &request1);
-        MPI_Wait(&request1, &status1);
+        MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
+        MPI_Wait(&request, &status);
     }
     if (rank == 16) {
         printf("Received particles for the center box for rank %d:\n", rank);
@@ -111,7 +112,6 @@ int main(int argc, char **argv) {
     //// 6-recv. Send and recv the number of particles in surrownding cells
     //// 4. Send and recv the position of particles in the center box
     if (rank == 0) {
-        mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request1, tag + 4);
     }
     if (rank < max_rank) {
         MPI_Irecv(map_rank_to_n_particles_in_surrcells, max_rank, MPI_INT, 0, tag + 6, MPI_COMM_WORLD, &request2);
