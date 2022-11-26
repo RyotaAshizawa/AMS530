@@ -8,12 +8,12 @@
 
 // mpi functions
 void mpi_send_n_particles_to_eachrank(int *n_particles_eachrank, const int tag, const int max_rank, MPI_Comm comm, MPI_Request *request){
-    for (int dst_rank = 1; dst_rank < max_rank; dst_rank++){
+    for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
         MPI_Isend(n_particles_eachrank, max_rank, MPI_INT, dst_rank, tag, comm, request);
     }
 }
 void mpi_send_centerbox_particles(int *n_particles_eachrank, double **coords_each_rank, const int max_rank, MPI_Comm comm, MPI_Request *request, const int tag){
-    for (int dst_rank = 1; dst_rank < max_rank; dst_rank++){
+    for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
         MPI_Isend(coords_each_rank[dst_rank], n_particles_eachrank[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
     }
 }
@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
 
     // memory allocations
+    int *n_particles_eachrank_send = (int *) malloc(sizeof(int) * max_rank);
     int *n_particles_eachrank = (int *) malloc(sizeof(int) * max_rank);
     int *map_rank_to_cell = (int *) malloc(sizeof(int) * 3 * max_rank);
     int *map_cell_to_rank = (int *) malloc(sizeof(int) * max_rank);
@@ -83,15 +84,15 @@ int main(int argc, char **argv) {
         dump_particles(box, "./test.xyz", N);
         // MPI definition
         init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell, false);
-        assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank, false);
+        assign_rank_to_cell(box, N, n_particles_eachrank_send, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank, false);
         //print_particles(box, N);
     }
 
     //// 2. Send-Recv number of particles of each cell
     if (rank == 0) {
-        mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
+        mpi_send_n_particles_to_eachrank(n_particles_eachrank_send, tag, max_rank, MPI_COMM_WORLD, &request);
     }
-    else if (rank < max_rank) {
+    if (rank < max_rank) {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
@@ -102,7 +103,7 @@ int main(int argc, char **argv) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank, false, rank_interest);
         mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag);
     }
-    else if (rank < max_rank) {
+    if (rank < max_rank) {
         MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
@@ -163,7 +164,6 @@ int main(int argc, char **argv) {
         add_force_between_two_particles_to_vector(force_and_id, coords2, coords1);
         printf("Accumulated (Fx, Fy, Fz) = (%f, %f %f) for id %d\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3]);
     }
-    **/
 
     //// 8. Calculate force inside the main box
     for (int i = 0; i < n_particles_eachrank[rank]; i++){
@@ -182,6 +182,7 @@ int main(int argc, char **argv) {
             printf("Force   (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for %d:\n", force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3], rank);
         }
     }
+    **/
 
     /**
     //// 9. Calculate force betweeen the main box and surrownding boxes
