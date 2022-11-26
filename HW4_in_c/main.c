@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
         dump_particles(box, "./test.xyz", N);
         // MPI definition
         init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell, false);
-        assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank, true);
+        assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank, false);
     }
 
     //// 2. Send-Recv number of particles of each cell
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
-    printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[rank]);
+    //printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[rank]);
 
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
