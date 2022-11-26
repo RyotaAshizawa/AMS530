@@ -130,7 +130,6 @@ int main(int argc, char **argv) {
     }
     //printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
 
-    /**
     //// 6. Send-recv cooridinates of surr cells
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, false, rank_interest);
@@ -147,6 +146,7 @@ int main(int argc, char **argv) {
     }
 
 
+    /**
     //// 7. force debugger
     if (rank == 0) {
         double *coords1 = (double *) malloc(sizeof(double) * 4);
