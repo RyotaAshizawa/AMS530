@@ -130,8 +130,7 @@ int main(int argc, char **argv) {
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, false, rank_interest);
         //mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag);
-        //printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[16], 16);
-        //print_particles_in_box(map_rank_to_coords_surrbox[16], map_rank_to_n_particles_in_surrcells[16]);
+        print_particles_in_box(map_rank_to_coords_surrbox[rank_interest], map_rank_to_n_particles_in_surrcells[rank_interest]);
     }
     /**
     if (rank < max_rank) {
