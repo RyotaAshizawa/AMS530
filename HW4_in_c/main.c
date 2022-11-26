@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     double *coords_peripheral_box = (double *) malloc(sizeof(double *) * N * 4);
 
     // debug option
-    int rank_interest = 26;
+    int rank_interest = 0;
 
     // Prepare data on rank 0
     //// 1. initialize box
@@ -165,25 +165,21 @@ int main(int argc, char **argv) {
         add_force_between_two_particles_to_vector(force_and_id, coords2, coords1);
         printf("Accumulated (Fx, Fy, Fz) = (%f, %f %f) for id %d\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3]);
     }
+    **/
 
     //// 8. Calculate force inside the main box
     for (int i = 0; i < n_particles_eachrank[rank]; i++){
         for (int j = 0; j < n_particles_eachrank[rank]; j++){
             if (i != j) { // ignore same particle
-                add_force_between_two_particles_to_vector(&force_and_id[i * 4],
-                                                          &coords_center_box[j * 4],
-                                                          &coords_center_box[i * 4],
-                                                          rank);
+                add_force_between_two_particles_to_vector(&force_and_id[i * 4],&coords_center_box[j * 4],&coords_center_box[i * 4], rank);
             }
         }
     }
-
     if (rank == rank_interest){
         for (int i = 0; i < n_particles_eachrank[rank]; i++) {
-            printf("Force   (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for %d:\n", force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3], rank);
+            printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d in the centered box %d:\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3], rank);
         }
     }
-    **/
 
     /**
     //// 9. Calculate force betweeen the main box and surrownding boxes
