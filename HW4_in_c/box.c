@@ -54,7 +54,7 @@ void init_coords_and_forces(double **box, bool use_rand, const int N, const int 
 
 
 //mpi functions
-void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_rank_to_cell) {
+void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_rank_to_cell, bool print_option) {
     int rank = 0;
     for (int i = 0; i < cpus_per_side; i++) {
         for (int j = 0; j < cpus_per_side; j++) {
@@ -63,24 +63,36 @@ void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_ra
                 map_rank_to_cell[rank * 3 + 0] = i;
                 map_rank_to_cell[rank * 3 + 1] = j;
                 map_rank_to_cell[rank * 3 + 2] = k;
+                if (print_option){
+                    printf("(%d, %d, %d) will be mapped to rank %d\n", i, j, k,
+                           map_cell_to_rank[i * cpus_per_side * cpus_per_side + j * cpus_per_side + k]);
+                    printf("Rank %d will be mapped to (i, j, k) = (%d, %d, %d)\n", rank, i, j, k);
+                }
                 rank++;
             }
         }
     }
+
 }
 
-void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const int cell_len_per_cpu, const int max_rank) {
+void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const double cell_len_per_cpu, const int max_rank, bool print_option) {
     // array definition and initialize
     for (int i = 0; i < max_rank; i++) {
         n_particles_eachrank[i] = 0;
     }
     for (int i = 0; i < N; i++) {
-        int cellno_in_x = floor(get_x(box[i]) / cell_len_per_cpu);
-        int cellno_in_y = floor(get_y(box[i]) / cell_len_per_cpu);
-        int cellno_in_z = floor(get_z(box[i]) / cell_len_per_cpu);
-        int rank = map_cell_to_rank[cellno_in_x * cpu_per_side * cpu_per_side + cellno_in_y * cpu_per_side + cellno_in_z];
+        int i_cell = floor(get_x(box[i]) / cell_len_per_cpu);
+        int j_cell = floor(get_y(box[i]) / cell_len_per_cpu);
+        int k_cell = floor(get_z(box[i]) / cell_len_per_cpu);
+        printf("%f %f %f.\n", get_x(box[i]), cell_len_per_cpu, get_x(box[i]) / cell_len_per_cpu);
+        int rank = map_cell_to_rank[i_cell * cpu_per_side * cpu_per_side + j_cell * cpu_per_side + k_cell];
         set_rank(box[i], rank);
         n_particles_eachrank[rank]++;
+    }
+    if (print_option){
+        for (int i = 0; i < max_rank; i++) {
+            printf("Number of particles for rank %d is %d.\n", i, n_particles_eachrank[i]);
+        }
     }
 }
 void get_particles_each_rank(double **box, const int N, double **coords_each_rank, const int max_rank){

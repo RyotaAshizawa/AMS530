@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     // mpi variables
     int cpus_per_side = floor(pow(size, 1. / 3.));
-    double cell_len_per_cpu = box_size / cpus_per_side;
+    double cell_len_per_cpu = (double)box_size / cpus_per_side;
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
 
     // memory allocations
@@ -79,9 +79,8 @@ int main(int argc, char **argv) {
         init_coords_and_forces(box, false, N, particles_per_side, particle_cellsize);
         dump_particles(box, "./test.xyz", N);
         // MPI definition
-        init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell);
-        assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank);
-        print_particles(box, N); // check it
+        init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell, false);
+        assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank, true);
     }
 
     //// 2. Send-Recv number of particles of each cell
@@ -94,7 +93,6 @@ int main(int argc, char **argv) {
     }
     printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[rank]);
 
-    /**
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
@@ -109,6 +107,7 @@ int main(int argc, char **argv) {
         print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
     }
 
+    /**
     //// 4. Get info of peripheral cells
     if (rank == 0){
         get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
