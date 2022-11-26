@@ -84,16 +84,16 @@ int main(int argc, char **argv) {
         print_particles(box, N); // check it
     }
 
+    /**
     //// 2. Send-Recv number of particles of each cell
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(n_particles_eachrank, tag, max_rank, MPI_COMM_WORLD, &request);
     }
-    elif (rank < max_rank) {
+    else if (rank < max_rank) {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
         //printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
     }
-    /**
 
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
