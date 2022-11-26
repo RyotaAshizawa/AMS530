@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
         mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag);
     }
-    elif (rank < max_rank) {
+    else if (rank < max_rank) {
         MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
