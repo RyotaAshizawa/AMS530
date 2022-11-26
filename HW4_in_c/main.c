@@ -115,17 +115,17 @@ int main(int argc, char **argv) {
         get_tot_particles_in_surrboxes(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, n_particles_eachrank);
     }
 
-    /**
     //// 5. Send-recv n particles of surr cells
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag, max_rank, MPI_COMM_WORLD, &request);
     }
-    if (rank < max_rank) {
+    else if (rank < max_rank) {
         MPI_Irecv(map_rank_to_n_particles_in_surrcells, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
-        //printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
     }
+    printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
 
+    /**
     //// 6. Send-recv cooridinates of surr cells
     // allocate memory first
     for (int rank = 0; rank < max_rank; rank++) {
