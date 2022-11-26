@@ -124,13 +124,9 @@ int main(int argc, char **argv) {
         MPI_Wait(&request, &status);
     }
     printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
-    /**
 
     //// 6. Send-recv cooridinates of surr cells
-    // allocate memory first
-    for (int rank = 0; rank < max_rank; rank++) {
-        map_rank_to_coords_surrbox[rank] = (double *) malloc(sizeof(double) * map_rank_to_n_particles_in_surrcells[rank] * 4);
-    }
+    /**
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells);
         mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag);
@@ -216,14 +212,6 @@ int main(int argc, char **argv) {
     }
     free(map_rank_to_coords_surrbox);
     free(coords_peripheral_box);
-    /**
-    for (int rank = 0; rank < max_rank; rank++) {
-        free(map_rank_to_coords_surrbox[rank]);
-    }
-    free(map_rank_to_coords_surrbox);
-    **/
-
-
 
     MPI_Finalize();
     return 0;
