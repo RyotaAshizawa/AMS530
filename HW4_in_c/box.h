@@ -31,7 +31,7 @@ int get_endidx_of_surrboxes(const int cpus_per_side, const int centered_box_idx)
 void get_n_surrboxes(const int max_rank, const int cpus_per_side, int *map_rank_to_cell, int *map_rank_to_n_surrcells);
 void get_rank_of_surrboxes(const int max_rank, const int cpus_per_side, int *map_rank_to_cell, int *map_cell_to_rank, int **map_rank_to_ranks_of_surrcells);
 void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_particles_in_surrcells, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells, int *n_particles_eachrank);
-void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells);
+void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells,  bool print_option, const int print_rank);
 
 
 

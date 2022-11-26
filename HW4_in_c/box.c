@@ -220,7 +220,7 @@ void get_tot_particles_in_surrboxes(const int max_rank, int *map_rank_to_n_parti
         //printf("Total particles in the surrownding box for rank %d: %d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
     }
 }
-void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells){
+void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_surrcells, double **map_rank_to_coords_surrbox, double **coords_each_rank, int *n_particles_eachrank, int *map_rank_to_n_surrcells, int **map_rank_to_ranks_of_surrcells, bool print_option, const int print_rank){
     // get values
     int processed_temp_n_particles = 0;
     for (int rank = 0; rank < max_rank; rank++){
@@ -256,4 +256,13 @@ void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_
             }
         }
     }
+    if (print_option) {
+        printf("%d, (x, y, z, id) = (%.2f, %.2f, %.2f, %d)\n",
+               processed_temp_n_particles,
+               map_rank_to_coords_surrbox[print_rank][processed_temp_n_particles * 4 + 0],
+               map_rank_to_coords_surrbox[print_rank][processed_temp_n_particles * 4 + 1],
+               map_rank_to_coords_surrbox[print_rank][processed_temp_n_particles * 4 + 2],
+               (int)map_rank_to_coords_surrbox[print_rank][processed_temp_n_particles * 4 + 3]);
+    }
+
 }
