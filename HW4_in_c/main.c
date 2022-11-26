@@ -177,6 +177,7 @@ int main(int argc, char **argv) {
         }
     }
 
+    /**
     //// 9. Calculate force betweeen the main box and surrownding boxes
     for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++) {
         for (int j_atom_surrboxes = 0; j_atom_surrboxes < map_rank_to_n_particles_in_surrcells[rank]; j_atom_surrboxes++) {
@@ -186,6 +187,7 @@ int main(int argc, char **argv) {
                                                       rank);
         }
     }
+    **/
     printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
 
     // free
