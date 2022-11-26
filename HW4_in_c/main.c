@@ -216,10 +216,12 @@ int main(int argc, char **argv) {
     }
     free(map_rank_to_coords_surrbox);
     free(coords_peripheral_box);
+    /**
     for (int rank = 0; rank < max_rank; rank++) {
         free(map_rank_to_coords_surrbox[rank]);
     }
     free(map_rank_to_coords_surrbox);
+    **/
 
 
 
