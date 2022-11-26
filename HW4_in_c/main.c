@@ -47,7 +47,11 @@ int main(int argc, char **argv) {
     int *n_particles_eachrank = (int *) malloc(sizeof(int) * max_rank);
     int *map_rank_to_cell = (int *) malloc(sizeof(int) * 3 * max_rank);
     int *map_cell_to_rank = (int *) malloc(sizeof(int) * max_rank);
+    //// Box definition
     double **box = (double **) malloc(sizeof(double *) * N); //first assign box memory
+    for (i = 0; i < N; i++) {
+        box[i] = (double *) malloc(sizeof(double) * 8);
+    }
     double **coords_each_rank = (double **) malloc(sizeof(double *) * max_rank);
     for (i = 0; i < max_rank; i++) {
         coords_each_rank[i] = (double *) malloc(sizeof(double) * 4 * N);
@@ -68,10 +72,7 @@ int main(int argc, char **argv) {
     double *coords_peripheral_box = (double *) malloc(sizeof(double *) * N * 4);
 
 
-    // Box definition
-    for (i = 0; i < N; i++) {
-        box[i] = (double *) malloc(sizeof(double) * 8);
-    }
+    /**
 
     // Prepare data on rank 0
     //// 1. initialize box
@@ -146,7 +147,6 @@ int main(int argc, char **argv) {
     }
 
 
-    /**
     //// 7. force debugger
     if (rank == 0) {
         double *coords1 = (double *) malloc(sizeof(double) * 4);
@@ -165,7 +165,6 @@ int main(int argc, char **argv) {
         add_force_between_two_particles_to_vector(force_and_id, coords2, coords1);
         printf("Accumulated (Fx, Fy, Fz) = (%f, %f %f) for id %d\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3]);
     }
-    **/
 
     //// 8. Calculate force inside the main box
     for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++){
@@ -189,14 +188,33 @@ int main(int argc, char **argv) {
         }
     }
     printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
-
-
-    /**
-    //MPI_Recv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
-    int send_test = 0;
-    int recv_test[1];
-    std::cout << "Rank of the process..:" << rank;
     **/
+
+    // free
+    free(n_particles_eachrank);
+    free(map_rank_to_cell);
+    for (i = 0; i < N; i++) {
+        free(box[i]);
+    }
+    free(box);
+    free(map_cell_to_rank);
+    for (i = 0; i < max_rank; i++) {
+        free(coords_each_rank[i]);
+    }
+    free(coords_each_rank);
+    free(coords_center_box);
+    for (i = 0; i < max_rank; i++) {
+        free(map_rank_to_ranks_of_surrcells[i]); // 26 is the max possible n of surr cells
+    }
+    free(map_rank_to_n_surrcells);
+    free(particles_surr_box);
+    free(map_rank_to_n_particles_in_surrcells);
+    free(force_and_id);
+    for (i = 0; i < max_rank; i++) {
+        free(map_rank_to_coords_surrbox[i]); // 26 is the max possible n of surr cells
+    }
+    free(map_rank_to_coords_surrbox);
+    free(coords_peripheral_box);
 
 
     MPI_Finalize();
