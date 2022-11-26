@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
         //print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
     }
 
-    /**
     //// 4. Get info of peripheral cells
     if (rank == 0){
         get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
@@ -116,6 +115,7 @@ int main(int argc, char **argv) {
         get_tot_particles_in_surrboxes(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, n_particles_eachrank);
     }
 
+    /**
     //// 5. Send-recv n particles of surr cells
     if (rank == 0) {
         mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag, max_rank, MPI_COMM_WORLD, &request);
