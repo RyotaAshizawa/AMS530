@@ -34,6 +34,14 @@ int main(int argc, char **argv) {
     MPI_Request request;
     MPI_Status status;
 
+    // Time detection
+    double start_time, end_time;
+    MPI_Barrier(MPI_COMM_WORLD);
+    start_time = MPI_Wtime();
+
+    // cutoff distance
+    double cutoff = 10.0;
+
     // box variables
     int N = atoi(argv[1]);
     double box_size = atoi(argv[2]);
@@ -81,7 +89,7 @@ int main(int argc, char **argv) {
     // Prepare data on rank 0
     //// 1. initialize box
     if (rank == 0) {
-        init_coords_and_forces(box, false, N, particles_per_side, particle_cellsize);
+        init_coords_and_forces(box, true, N, particles_per_side, particle_cellsize);
         dump_particles(box, "./test.xyz", N);
         // MPI definition
         init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell, false);
@@ -134,14 +142,14 @@ int main(int argc, char **argv) {
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, false, rank_interest);
         mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag);
-        print_particles_in_box(map_rank_to_coords_surrbox[rank_interest], map_rank_to_n_particles_in_surrcells[rank_interest]);
+        //print_particles_in_box(map_rank_to_coords_surrbox[rank_interest], map_rank_to_n_particles_in_surrcells[rank_interest]);
     }
     if (rank < max_rank) {
         MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
         if (rank == rank_interest) {
-            printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[rank], rank);
-            print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
+            //printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[rank], rank);
+            //print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
         }
     }
     /**
@@ -171,7 +179,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < n_particles_eachrank[rank]; i++){
         for (int j = 0; j < n_particles_eachrank[rank]; j++){
             if (i != j) { // ignore same particle
-                add_force_between_two_particles_to_vector(&force_and_id[i * 4],&coords_center_box[j * 4],&coords_center_box[i * 4], rank);
+                add_force_between_two_particles_to_vector(&force_and_id[i * 4],&coords_center_box[j * 4],&coords_center_box[i * 4], rank, cutoff);
             }
         }
     }
@@ -185,7 +193,7 @@ int main(int argc, char **argv) {
     //// 9. Calculate force betweeen the main box and surrownding boxes
     for (int i = 0; i < n_particles_eachrank[rank]; i++) {
         for (int j = 0; j < map_rank_to_n_particles_in_surrcells[rank]; j++) {
-            add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_peripheral_box[j * 4], &coords_center_box[i * 4], rank);
+            add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_peripheral_box[j * 4], &coords_center_box[i * 4], rank, cutoff);
         }
     }
     if (rank == rank_interest){
@@ -223,6 +231,14 @@ int main(int argc, char **argv) {
     free(coords_peripheral_box);
     free(n_particles_eachrank_send);
     free(map_rank_to_n_particles_in_surrcells_send);
+
+    // Time detection
+    MPI_Barrier(MPI_COMM_WORLD);
+    end_time = MPI_Wtime();
+    // show the time on the master node
+    if (rank == 0) {
+        printf("%f\n", end_time - start_time);
+    }
 
     MPI_Finalize();
     return 0;
