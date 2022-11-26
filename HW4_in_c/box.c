@@ -22,7 +22,7 @@ void dump_particles(double **box, char filepath[], const int N){
 
 void init_coords_and_forces(double **box, bool use_rand, const int N, const int particles_per_side, const double particle_cellsize) {
     // assume each particle locates at the center of each cell
-    bool flag;
+    bool flag == false;
     double x, y, z;
     int particle_count = 0;
     for (int i = 0; i < particles_per_side; i++) {
