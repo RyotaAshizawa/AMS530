@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     // Prepare data on rank 0
     //// 1. initialize box
     if (rank == 0) {
-        init_coords_and_forces(box, true, N, particles_per_side, particle_cellsize);
+        init_coords_and_forces(box, false, N, particles_per_side, particle_cellsize);
         dump_particles(box, "./test.xyz", N);
         // MPI definition
         init_map_cell_to_rank(cpus_per_side, map_cell_to_rank, map_rank_to_cell);
@@ -92,8 +92,9 @@ int main(int argc, char **argv) {
         MPI_Irecv(n_particles_eachrank, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
-    printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
+    printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[rank]);
 
+    /**
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
@@ -108,7 +109,6 @@ int main(int argc, char **argv) {
         print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
     }
 
-    /**
     //// 4. Get info of peripheral cells
     if (rank == 0){
         get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
