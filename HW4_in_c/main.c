@@ -217,6 +217,7 @@ int main(int argc, char **argv) {
     free(coords_peripheral_box);
 
 
+
     MPI_Finalize();
     return 0;
 
