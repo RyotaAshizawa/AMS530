@@ -258,9 +258,9 @@ void map_rank_to_coords_surrcells(int max_rank, int *map_rank_to_n_particles_in_
     }
     if (print_option) {
         printf("Particle coords in the surrownding cell for rank %d.\n", print_rank);
-        for (int i = 0; i < map_rank_to_n_particles_in_surrcells[i]; i++) {
+        for (int i = 0; i < map_rank_to_n_particles_in_surrcells[print_rank]; i++) {
             printf("%d, (x, y, z, id) = (%.2f, %.2f, %.2f, %d)\n",
-                   processed_temp_n_particles,
+                   i,
                    map_rank_to_coords_surrbox[print_rank][i * 4 + 0],
                    map_rank_to_coords_surrbox[print_rank][i * 4 + 1],
                    map_rank_to_coords_surrbox[print_rank][i * 4 + 2],
