@@ -8,12 +8,12 @@
 
 // mpi functions
 void mpi_send_n_particles_to_eachrank(int *n_particles_eachrank, const int tag, const int max_rank, MPI_Comm comm, MPI_Request *request){
-    for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
+    for (int dst_rank = 1; dst_rank < max_rank; dst_rank++){
         MPI_Isend(n_particles_eachrank, max_rank, MPI_INT, dst_rank, tag, comm, request);
     }
 }
 void mpi_send_centerbox_particles(int *n_particles_eachrank, double **coords_each_rank, const int max_rank, MPI_Comm comm, MPI_Request *request, const int tag){
-    for (int dst_rank = 0; dst_rank < max_rank; dst_rank++){
+    for (int dst_rank = 1; dst_rank < max_rank; dst_rank++){
         MPI_Isend(coords_each_rank[dst_rank], n_particles_eachrank[dst_rank] * 4, MPI_DOUBLE, dst_rank, tag, comm, request);
     }
 }
@@ -134,10 +134,10 @@ int main(int argc, char **argv) {
         mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag);
         print_particles_in_box(map_rank_to_coords_surrbox[rank_interest], map_rank_to_n_particles_in_surrcells[rank_interest]);
     }
-    else if (rank < max_rank) {
+    if (rank < max_rank) {
         MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
-        if (rank == 16) {
+        if (rank == rank_interest) {
             printf("%d particles are received for the peripheral box for rank %d:\n", map_rank_to_n_particles_in_surrcells[rank], rank);
             print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
         }
