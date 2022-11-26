@@ -66,6 +66,7 @@ int main(int argc, char **argv) {
         map_rank_to_ranks_of_surrcells[i] = (int *) malloc(sizeof(int) * 26); // 26 is the max possible n of surr cells
     }
     double *particles_surr_box = (double *) malloc(sizeof(double) * 4 * N);
+    int *map_rank_to_n_particles_in_surrcells_send = (int *) malloc(sizeof(int) * max_rank);
     int *map_rank_to_n_particles_in_surrcells = (int *) malloc(sizeof(int) * max_rank);
     double *force_and_id = (double *) malloc(sizeof(double) * 4 * N);
     double **map_rank_to_coords_surrbox = (double **) malloc(sizeof(double *) * max_rank);
@@ -116,19 +117,20 @@ int main(int argc, char **argv) {
     if (rank == 0){
         get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
         get_rank_of_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_cell_to_rank, map_rank_to_ranks_of_surrcells);
-        get_tot_particles_in_surrboxes(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, n_particles_eachrank);
+        get_tot_particles_in_surrboxes(max_rank, map_rank_to_n_particles_in_surrcells_send, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, n_particles_eachrank);
     }
 
     //// 5. Send-recv n particles of surr cells
     if (rank == 0) {
-        mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells, tag, max_rank, MPI_COMM_WORLD, &request);
+        mpi_send_n_particles_to_eachrank(map_rank_to_n_particles_in_surrcells_send, tag, max_rank, MPI_COMM_WORLD, &request);
     }
-    else if (rank < max_rank) {
+    if (rank < max_rank) {
         MPI_Irecv(map_rank_to_n_particles_in_surrcells, max_rank, MPI_INT, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
     //printf("Rank:%d, N of particles in the surrownding cells:%d\n", rank, map_rank_to_n_particles_in_surrcells[rank]);
 
+    /**
     //// 6. Send-recv cooridinates of surr cells
     if (rank == 0) {
         map_rank_to_coords_surrcells(max_rank, map_rank_to_n_particles_in_surrcells, map_rank_to_coords_surrbox, coords_each_rank, n_particles_eachrank, map_rank_to_n_surrcells, map_rank_to_ranks_of_surrcells, false, rank_interest);
@@ -145,7 +147,6 @@ int main(int argc, char **argv) {
     }
 
 
-    /**
     //// 7. force debugger
     if (rank == 0) {
         double *coords1 = (double *) malloc(sizeof(double) * 4);
