@@ -166,14 +166,20 @@ int main(int argc, char **argv) {
     **/
 
     //// 8. Calculate force inside the main box
-    for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++){
-        for (int j_atom_centerbox = 0; j_atom_centerbox < n_particles_eachrank[rank]; j_atom_centerbox++){
-            if (i_atom_centerbox != j_atom_centerbox) {
-                add_force_between_two_particles_to_vector(&force_and_id[i_atom_centerbox * 4],
-                                                          &coords_center_box[j_atom_centerbox * 4],
-                                                          &coords_center_box[i_atom_centerbox * 4],
+    for (int i = 0; i < n_particles_eachrank[rank]; i++){
+        for (int j = 0; j < n_particles_eachrank[rank]; j++){
+            if (i != j) { // ignore same particle
+                add_force_between_two_particles_to_vector(&force_and_id[i * 4],
+                                                          &coords_center_box[j * 4],
+                                                          &coords_center_box[i * 4],
                                                           rank);
             }
+        }
+    }
+
+    if (rank == rank_interest){
+        for (int i = 0; i < n_particles_eachrank[rank]; i++) {
+            printf("Force   (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for %d:\n", force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3], rank);
         }
     }
 
@@ -188,7 +194,6 @@ int main(int argc, char **argv) {
         }
     }
     **/
-    printf("Accumulated (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d for rank %d:\n", force_and_id[0], force_and_id[1], force_and_id[2], (int)force_and_id[3], rank);
 
     // free
     free(n_particles_eachrank);
