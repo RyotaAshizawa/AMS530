@@ -223,6 +223,8 @@ int main(int argc, char **argv) {
     }
     free(map_rank_to_coords_surrbox);
     free(coords_peripheral_box);
+    free(n_particles_eachrank_send);
+    free(map_rank_to_n_particles_in_surrcells_send);
 
     MPI_Finalize();
     return 0;
