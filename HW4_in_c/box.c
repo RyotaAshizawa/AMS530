@@ -84,7 +84,6 @@ void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, i
         int i_cell = floor(get_x(box[i]) / cell_len_per_cpu);
         int j_cell = floor(get_y(box[i]) / cell_len_per_cpu);
         int k_cell = floor(get_z(box[i]) / cell_len_per_cpu);
-        printf("%f %f %f.\n", get_x(box[i]), cell_len_per_cpu, get_x(box[i]) / cell_len_per_cpu);
         int rank = map_cell_to_rank[i_cell * cpu_per_side * cpu_per_side + j_cell * cpu_per_side + k_cell];
         set_rank(box[i], rank);
         n_particles_eachrank[rank]++;
@@ -95,7 +94,7 @@ void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, i
         }
     }
 }
-void get_particles_each_rank(double **box, const int N, double **coords_each_rank, const int max_rank){
+void get_particles_each_rank(double **box, const int N, double **coords_each_rank, const int max_rank, bool print_option, const int print_rank){
     // array definition and initialize
     int n_assigned_p_each_rank[max_rank];
     for (int i = 0; i < max_rank; i++){
@@ -108,6 +107,17 @@ void get_particles_each_rank(double **box, const int N, double **coords_each_ran
         coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 2] = get_z(box[i]);
         coords_each_rank[rank][n_assigned_p_each_rank[rank] * 4 + 3] = get_id(box[i]);
         n_assigned_p_each_rank[rank]++;
+    }
+    if (print_option){
+        printf("Particles position in the function 'get_particles_each_rank' for the rank %d.\n", print_rank);
+        for (int i = 0; i < n_assigned_p_each_rank[print_rank]; i++) {
+            printf("%d, (x, y, z, id) = (%f, %f, %f, %d)\n",
+                   i,
+                   coords_each_rank[print_rank][i * 4 + 0],
+                   coords_each_rank[print_rank][i * 4 + 1],
+                   coords_each_rank[print_rank][i * 4 + 2],
+                   (int)coords_each_rank[print_rank][i * 4 + 3]);
+        }
     }
 }
 void print_particles_special_rank(double **coords_each_rank, int *n_particles_eachrank, const int rank){

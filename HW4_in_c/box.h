@@ -23,7 +23,7 @@ void init_coords_and_forces(double **box, bool use_rand, const int N, const int 
 void dump_particles(double **box, char filepath[], const int N);
 void init_map_cell_to_rank(int cpus_per_side, int *map_cell_to_rank, int *map_rank_to_cell, bool print_option);
 void assign_rank_to_cell(double **box, const int N, int *n_particles_eachrank, int *map_cell_to_rank, const int cpu_per_side, const double cell_len_per_cpu, const int max_rank, bool print_option);
-void get_particles_each_rank(double **box, const int N, double **coords_each_rank, const int max_rank);
+void get_particles_each_rank(double **box, const int N, double **coords_each_rank, const int max_rank, bool print_option, const int print_rank);
 void print_particles_special_rank(double **coords_each_rank, int *n_particles_eachrank, const int rank);
 void print_particles_in_box(double *particles_coords, int particles_in_box);
 int get_startidx_of_surrboxes(const int centered_box_idx);

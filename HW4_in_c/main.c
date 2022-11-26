@@ -71,7 +71,8 @@ int main(int argc, char **argv) {
     }
     double *coords_peripheral_box = (double *) malloc(sizeof(double *) * N * 4);
 
-
+    // debug option
+    int rank_interest = 26;
 
     // Prepare data on rank 0
     //// 1. initialize box
@@ -95,16 +96,16 @@ int main(int argc, char **argv) {
 
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
-        get_particles_each_rank(box, N, coords_each_rank, max_rank);
+        get_particles_each_rank(box, N, coords_each_rank, max_rank, false, rank_interest);
         mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag);
     }
     else if (rank < max_rank) {
         MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
-    if (rank == 13) {
-        printf("Received particles for the center box for rank %d:\n", rank);
-        print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
+    if (rank == rank_interest) {
+        //printf("Received particles for the center box for rank %d:\n", rank);
+        //print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
     }
 
     /**
