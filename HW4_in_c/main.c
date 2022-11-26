@@ -176,22 +176,24 @@ int main(int argc, char **argv) {
         }
     }
     if (rank == rank_interest){
+        printf("Force contribution from particles in the centered box for rank %d\n", rank);
         for (int i = 0; i < n_particles_eachrank[rank]; i++) {
-            printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf) for id %d in the centered box %d:\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3], rank);
+            printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf), ID = %d\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3]);
         }
     }
 
-    /**
     //// 9. Calculate force betweeen the main box and surrownding boxes
-    for (int i_atom_centerbox = 0; i_atom_centerbox < n_particles_eachrank[rank]; i_atom_centerbox++) {
-        for (int j_atom_surrboxes = 0; j_atom_surrboxes < map_rank_to_n_particles_in_surrcells[rank]; j_atom_surrboxes++) {
-            add_force_between_two_particles_to_vector(&force_and_id[i_atom_centerbox * 4],
-                                                      &coords_peripheral_box[j_atom_surrboxes * 4],
-                                                      &coords_center_box[i_atom_centerbox * 4],
-                                                      rank);
+    for (int i = 0; i < n_particles_eachrank[rank]; i++) {
+        for (int j = 0; j < map_rank_to_n_particles_in_surrcells[rank]; j++) {
+            add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_peripheral_box[j * 4], &coords_center_box[i * 4], rank);
         }
     }
-    **/
+    if (rank == rank_interest){
+        printf("Total force to the particles for rank %d\n", rank);
+        for (int i = 0; i < n_particles_eachrank[rank]; i++) {
+            printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf), ID = %d\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3]);
+        }
+    }
 
     // free
     free(n_particles_eachrank);
