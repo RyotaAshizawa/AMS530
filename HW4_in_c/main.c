@@ -93,22 +93,22 @@ int main(int argc, char **argv) {
         MPI_Wait(&request, &status);
     }
     printf("Rank:%d, Recv:%d\n", rank, n_particles_eachrank[0]);
-    /**
 
     //// 3. Send-recv particle positions of each cell
     if (rank == 0) {
         get_particles_each_rank(box, N, coords_each_rank, max_rank);
         mpi_send_centerbox_particles(n_particles_eachrank, coords_each_rank, max_rank, MPI_COMM_WORLD, &request, tag);
     }
-    if (rank < max_rank) {
+    elif (rank < max_rank) {
         MPI_Irecv(coords_center_box, n_particles_eachrank[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
     }
-    if (rank == 16) {
-        //printf("Received particles for the center box for rank %d:\n", rank);
-        //print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
+    if (rank == 13) {
+        printf("Received particles for the center box for rank %d:\n", rank);
+        print_particles_in_box(coords_center_box, n_particles_eachrank[rank]);
     }
 
+    /**
     //// 4. Get info of peripheral cells
     if (rank == 0){
         get_n_surrboxes(max_rank, cpus_per_side, map_rank_to_cell, map_rank_to_n_surrcells);
