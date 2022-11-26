@@ -72,7 +72,6 @@ int main(int argc, char **argv) {
     double *coords_peripheral_box = (double *) malloc(sizeof(double *) * N * 4);
 
 
-    /**
 
     // Prepare data on rank 0
     //// 1. initialize box
@@ -84,6 +83,7 @@ int main(int argc, char **argv) {
         assign_rank_to_cell(box, N, n_particles_eachrank, map_cell_to_rank, cpus_per_side, cell_len_per_cpu, max_rank);
         print_particles(box, N); // check it
     }
+    /**
 
     //// 2. Send-Recv number of particles of each cell
     if (rank == 0) {
