@@ -136,7 +136,6 @@ int main(int argc, char **argv) {
         mpi_send_surrbox_particles(map_rank_to_coords_surrbox, map_rank_to_n_particles_in_surrcells, max_rank, MPI_COMM_WORLD, &request, tag);
         print_particles_in_box(map_rank_to_coords_surrbox[rank_interest], map_rank_to_n_particles_in_surrcells[rank_interest]);
     }
-    /**
     if (rank < max_rank) {
         MPI_Irecv(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank] * 4, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD, &request);
         MPI_Wait(&request, &status);
@@ -145,6 +144,7 @@ int main(int argc, char **argv) {
             print_particles_in_box(coords_peripheral_box, map_rank_to_n_particles_in_surrcells[rank]);
         }
     }
+    /**
 
 
     //// 7. force debugger
