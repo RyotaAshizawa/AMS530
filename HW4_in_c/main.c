@@ -206,6 +206,7 @@ int main(int argc, char **argv) {
     for (i = 0; i < max_rank; i++) {
         free(map_rank_to_ranks_of_surrcells[i]); // 26 is the max possible n of surr cells
     }
+    free(map_rank_to_ranks_of_surrcells);
     free(map_rank_to_n_surrcells);
     free(particles_surr_box);
     free(map_rank_to_n_particles_in_surrcells);
