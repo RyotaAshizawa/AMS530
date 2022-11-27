@@ -179,14 +179,16 @@ int main(int argc, char **argv) {
     **/
 
     //// 8. Calculate force inside the main box
-    for (int i = 0; i < n_particles_eachrank[rank]; i++){
-        for (int j = 0; j < n_particles_eachrank[rank]; j++){
-            if (i != j) { // ignore same particle
-                add_force_between_two_particles_to_vector(&force_and_id[i * 4],&coords_center_box[j * 4],&coords_center_box[i * 4], rank, cutoff);
+    if (rank < max_rank) {
+        for (int i = 0; i < n_particles_eachrank[rank]; i++) {
+            for (int j = 0; j < n_particles_eachrank[rank]; j++) {
+                if (i != j) { // ignore same particle
+                    add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_center_box[j * 4], &coords_center_box[i * 4], rank, cutoff);
+                }
             }
         }
     }
-    if (rank == rank_interest && force_print_option){
+    if (rank == rank_interest && force_print_option && rank < max_rank){
         printf("Force contribution from particles in the centered box for rank %d\n", rank);
         for (int i = 0; i < n_particles_eachrank[rank]; i++) {
             printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf), ID = %d\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3]);
@@ -194,12 +196,14 @@ int main(int argc, char **argv) {
     }
 
     //// 9. Calculate force betweeen the main box and surrownding boxes
-    for (int i = 0; i < n_particles_eachrank[rank]; i++) {
-        for (int j = 0; j < map_rank_to_n_particles_in_surrcells[rank]; j++) {
-            add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_peripheral_box[j * 4], &coords_center_box[i * 4], rank, cutoff);
+    if (rank < max_rank) {
+        for (int i = 0; i < n_particles_eachrank[rank]; i++) {
+            for (int j = 0; j < map_rank_to_n_particles_in_surrcells[rank]; j++) {
+                add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_peripheral_box[j * 4], &coords_center_box[i * 4], rank, cutoff);
+            }
         }
     }
-    if (rank == rank_interest && force_print_option){
+    if (rank == rank_interest && force_print_option && rank < max_rank){
         printf("Total force to the particles for rank %d\n", rank);
         for (int i = 0; i < n_particles_eachrank[rank]; i++) {
             printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf), ID = %d\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3]);
