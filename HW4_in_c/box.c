@@ -34,9 +34,9 @@ void init_coords_and_forces(double **box, bool use_rand, const int N, const int 
                 z = particle_cellsize * (k + 0.5);
                 // add random perturbation
                 if (use_rand){
-                    x = x + particle_cellsize * ((double)rand() / RAND_MAX * 0.2);
-                    y = y + particle_cellsize * ((double)rand() / RAND_MAX * 0.2);
-                    z = z + particle_cellsize * ((double)rand() / RAND_MAX * 0.2);
+                    x = x + particle_cellsize * (-0.4 + rand() / (double)RAND_MAX * 0.8);
+                    y = y + particle_cellsize * (-0.4 + rand() / (double)RAND_MAX * 0.8);
+                    z = z + particle_cellsize * (-0.4 + rand() / (double)RAND_MAX * 0.8);
                 }
                 set_coordinate(box[particle_count], x, y, z, 0, 0, 0, 0, particle_count);
                 // Break the loop if the positions of all particles are set.
