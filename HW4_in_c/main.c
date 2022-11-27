@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     start_time = MPI_Wtime();
 
     // cutoff distance
-    double cutoff = 10.0;
+    double cutoff = 9.0;
 
     // box variables
     int N = atoi(argv[1]);
@@ -52,6 +52,9 @@ int main(int argc, char **argv) {
     int cpus_per_side = floor(pow(size, 1. / 3.));
     double cell_len_per_cpu = (double)box_size / cpus_per_side;
     int max_rank = cpus_per_side * cpus_per_side * cpus_per_side;
+
+    // print option
+    bool force_print_option = false;
 
     // memory allocations
     int *n_particles_eachrank_send = (int *) malloc(sizeof(int) * max_rank);
@@ -183,7 +186,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    if (rank == rank_interest){
+    if (rank == rank_interest && force_print_option){
         printf("Force contribution from particles in the centered box for rank %d\n", rank);
         for (int i = 0; i < n_particles_eachrank[rank]; i++) {
             printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf), ID = %d\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3]);
@@ -196,7 +199,7 @@ int main(int argc, char **argv) {
             add_force_between_two_particles_to_vector(&force_and_id[i * 4], &coords_peripheral_box[j * 4], &coords_center_box[i * 4], rank, cutoff);
         }
     }
-    if (rank == rank_interest){
+    if (rank == rank_interest && force_print_option){
         printf("Total force to the particles for rank %d\n", rank);
         for (int i = 0; i < n_particles_eachrank[rank]; i++) {
             printf("%d, (Fx, Fy, Fz) = (%lf, %lf %lf), ID = %d\n", i, force_and_id[i * 4 + 0], force_and_id[i * 4 + 1], force_and_id[i * 4 + 2], (int) force_and_id[i * 4 + 3]);
